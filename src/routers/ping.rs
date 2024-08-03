@@ -1,4 +1,4 @@
-use actix_web::{get, Responder, web};
+use actix_web::{Responder, web};
 
 
 pub fn ping_router(cfg: &mut web::ServiceConfig) {
@@ -7,6 +7,7 @@ pub fn ping_router(cfg: &mut web::ServiceConfig) {
             .route("ping", web::get().to(ping))
     );
 }
+
 
 pub async fn ping() -> impl Responder {
     format!("{}", "Pong!")

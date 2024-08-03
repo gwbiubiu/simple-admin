@@ -7,3 +7,10 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
+anyhow = "1.0.86"
+mysql = "25.0.1"
+serde = { version = "1.0.204", features = ["derive"] }
+toml = "0.8.19"
+log = "0.4.22"
+env_logger = "0.10"
+chrono = "0.4.38"

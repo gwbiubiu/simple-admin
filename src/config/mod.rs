@@ -1,4 +1,3 @@
-mod database;
 
 use std::fs::File;
 use std::io::Read;
@@ -14,6 +13,7 @@ pub struct Config {
 struct Database {
     mysql: Mysql,
 }
+
 #[derive(Debug, Deserialize)]
 struct Mysql {
     host: String,
@@ -37,5 +37,17 @@ impl Default for Config {
         };
         toml::from_str(&str).expect("Parsing the configuration file failed")
     }
+}
 
+impl Config {
+    pub fn get_db_url(&self) -> String {
+        format!(
+            "mysql://{}:{}@{}:{}/{}",
+            self.database.mysql.user,
+            self.database.mysql.password,
+            self.database.mysql.host,
+            self.database.mysql.port,
+            self.database.mysql.database
+        )
+    }
 }

@@ -3,8 +3,11 @@ mod config;
 mod models;
 mod repo;
 mod services;
-mod entities;
+pub mod entities;
+mod global;
 
 pub use routers::*;
 
 pub use config::*;
+
+pub use global::*;

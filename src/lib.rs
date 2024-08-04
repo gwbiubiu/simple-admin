@@ -5,6 +5,7 @@ mod repo;
 mod services;
 pub mod entities;
 mod global;
+mod errors;
 
 pub use routers::*;
 

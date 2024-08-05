@@ -3,6 +3,7 @@ use crate::global::AppState;
 use crate::{models, success_json};
 use crate::services::User;
 use anyhow::Result;
+use crate::errors::AppError;
 
 pub fn user_router(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -22,7 +23,7 @@ pub fn user_router(cfg: &mut web::ServiceConfig) {
 #[get("/{id}")]
 async fn get_user_by_id(data: web::Data<AppState>, id: web::Path<i32>) -> Result<HttpResponse, Error> {
     let conn = &data.conn;
-    let ret = User::find_user_by_id(conn, id.into_inner()).await?;
+    let ret = User::find_user_by_id(conn, id.into_inner()).await.map_err(|e| AppError::SystemError("find user failed".to_string()))?;
     return Ok(HttpResponse::Ok().json(ret));
 }
 

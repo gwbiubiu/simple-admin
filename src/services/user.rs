@@ -7,7 +7,6 @@ use password_hash::rand_core::OsRng;
 use password_hash::{PasswordHasher, SaltString};
 use sea_orm::prelude::Expr;
 use crate::errors::AppError;
-use crate::errors::user::UserError;
 
 
 pub struct User;
@@ -27,15 +26,8 @@ impl User {
         Ok(rsp.last_insert_id)
     }
 
-    pub async fn find_user_by_id(db: &DbConn, id: i32) -> Result<Option<entities::user::Model>, AppError> {
-        let user: Option<entities::user::Model> = entities::user::Entity::find_by_id(id).one(db).await?;
-        let user = match user {
-            Some(user) => user.into(),
-            None => {
-                return Err(AppError::UserError(UserError::NotFound));
-            }
-        };
-        Ok(user)
+    pub async fn find_user_by_id(db: &DbConn, id: i32) -> Result<models::User> {
+        models::User::get_user_by_id(db, id).await
     }
 
 

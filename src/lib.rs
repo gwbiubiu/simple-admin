@@ -6,9 +6,12 @@ mod services;
 pub mod entities;
 mod global;
 mod errors;
+pub mod middleware;
 
 pub use routers::*;
 
 pub use config::*;
 
 pub use global::*;
+
+pub use middleware::*;

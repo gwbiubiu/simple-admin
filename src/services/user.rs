@@ -39,4 +39,8 @@ impl User {
             .await?;
         Ok(update_result.rows_affected > 0)
     }
+    
+    pub async fn get_user_list(db: &DbConn, query: models::QueryUsers) -> Result<(Vec<models::User>, u64)> {
+        models::User::get_user_list(db, query).await
+    }
 }

@@ -9,7 +9,6 @@ use crate::models::{Page, PageResponse};
 pub fn user_router(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("user")
-            //.route("", web::post().to(create_user))
             .service(get_user_by_id)
             .service(create_user)
             .service(update_user_status)

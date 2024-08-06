@@ -1,9 +1,11 @@
 pub mod user;
+pub mod api;
 
 use actix_web::http::StatusCode;
 use actix_web::ResponseError;
 use thiserror::Error;
 use user::UserError;
+use crate::errors::api::ApiError;
 
 
 #[derive(Error, Debug)]
@@ -16,6 +18,8 @@ pub enum AppError {
     SystemError(String),
     #[error("User Error")]
     UserError(UserError),
+    #[error("Api Error")]
+    ApiError(ApiError),
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -30,7 +34,7 @@ impl ResponseError for AppError {
             AppError::BadRequest(_) => StatusCode::BAD_REQUEST,
             AppError::DatabaseError(_) => StatusCode::BAD_REQUEST,
             AppError::SystemError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            AppError::UserError(_) => StatusCode::OK,
+            _ => StatusCode::OK,
         }
     }
 

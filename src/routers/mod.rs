@@ -1,6 +1,8 @@
 mod ping;
 mod user;
 mod auth;
+mod api;
+mod role;
 
 use actix_web::{web};
 use serde::Serialize;
@@ -11,6 +13,7 @@ pub fn router(cfg: &mut web::ServiceConfig) {
             .configure(user::user_router)
             .configure(ping::ping_router)
             .configure(auth::auth_router)
+            .configure(api::api_router)
     );
 }
 

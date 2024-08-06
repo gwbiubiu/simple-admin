@@ -1,7 +1,7 @@
+use std::collections::HashSet;
 use std::env::set_var;
 use actix_web::{App, HttpRequest, HttpResponse, HttpServer, middleware, web, Error};
 use actix_web::middleware::TrailingSlash;
-use actix_web::web::ReqData;
 use simple_admin::{AppState, Config, JwtMiddleware, routers};
 use anyhow::Result;
 use log::info;
@@ -26,7 +26,7 @@ async fn main() -> Result<()> {
             .app_data(state.clone())
             .wrap(middleware::Logger::default())
             .wrap(middleware::NormalizePath::new(TrailingSlash::Trim))
-            .wrap(JwtMiddleware)
+            //.wrap(JwtMiddleware)
             .default_service(web::route().to(not_found))
             .configure(routers::router)
     })

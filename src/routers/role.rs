@@ -1,6 +1,6 @@
 use actix_web::{delete, Error, get, HttpResponse, post, put, web};
 use anyhow::Result;
-use crate::{AppState, models, services, success_json};
+use crate::{AppState, services, success_json};
 use crate::models::role;
 
 pub fn role_router(cfg: &mut web::ServiceConfig) {
@@ -27,23 +27,23 @@ async fn role_list(data: web::Data<AppState>, query: web::Query<role::QueryRole>
 async fn create_role(data: web::Data<AppState>, role: web::Json<role::CreateRole>) -> Result<HttpResponse, Error> {
     let db = &data.conn;
     let role = role.into_inner();
-    let id = role::Role::create_role(db, role).await?;
+    let id = services::role::Role::create_role(db, role).await?;
     Ok(success_json(id))
 }
 
 #[get("/{id:\\d+}")]
 async fn get_role_by_id(data: web::Data<AppState>, id: web::Path<i32>) -> Result<HttpResponse, Error> {
     let db = &data.conn;
-    let id = 1;
-    Ok(success_json(id))
+    let role = services::role::Role::get_role_by_id(db, id.into_inner()).await?;
+    Ok(success_json(role))
 }
 
 
 #[put("/{id}")]
-async fn update_role(data: web::Data<AppState>, id: web::Path<i32>) -> Result<HttpResponse, Error> {
+async fn update_role(data: web::Data<AppState>, id: web::Path<i32>, role: web::Json<role::UpdateRole>) -> Result<HttpResponse, Error> {
     let db = &data.conn;
-    let id = 1;
-    Ok(success_json(id))
+    let resp = services::role::Role::update_role(db, id.into_inner(), role.into_inner()).await?;
+    Ok(success_json(resp))
 }
 
 #[delete("/{id}")]

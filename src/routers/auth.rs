@@ -1,5 +1,5 @@
-use actix_web::{Error, get, HttpResponse, post, web};
-use crate::{AppState, entities, models, success_json};
+use actix_web::{Error,  HttpResponse, post, web};
+use crate::{AppState,  models, success_json};
 use crate::services::Auth;
 
 pub fn auth_router(cfg: &mut web::ServiceConfig) {

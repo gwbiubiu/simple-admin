@@ -106,7 +106,7 @@ impl Api {
     pub async fn update_api(db: &DbConn, id: i32, api: UpdateApi) -> Result<bool, AppError> {
         let old_api = api::Entity::find_by_id(id).one(db).await?;
         match old_api {
-            Some(mut old_api) => {
+            Some(old_api) => {
                 let mut update_api: api::ActiveModel = old_api.into();
                 if let Some(name) = api.name {
                     update_api.name = Set(name);

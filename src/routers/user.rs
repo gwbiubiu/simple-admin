@@ -1,4 +1,4 @@
-use actix_web::{get, HttpRequest, HttpResponse, post, Responder, web, Error, ResponseError, put};
+use actix_web::{get, HttpResponse, post, web, Error, ResponseError, put};
 use crate::global::AppState;
 use crate::{models, success_json};
 use crate::services::User;
@@ -24,7 +24,7 @@ pub fn user_router(cfg: &mut web::ServiceConfig) {
 #[get("/{id:\\d+}")]
 async fn get_user_by_id(data: web::Data<AppState>, id: web::Path<i32>) -> Result<HttpResponse, Error> {
     let conn = &data.conn;
-    let ret = User::find_user_by_id(conn, id.into_inner()).await.map_err(|e| AppError::SystemError("find user failed".to_string()))?;
+    let ret = User::find_user_by_id(conn, id.into_inner()).await.map_err(|_e| AppError::SystemError("find user failed".to_string()))?;
     return Ok(HttpResponse::Ok().json(ret));
 }
 
@@ -47,7 +47,7 @@ async fn update_user_status(data: web::Data<AppState>, id: web::Path<i32>) -> Re
 async fn get_user_list(data: web::Data<AppState>, query: web::Query<models::QueryUsers>) -> Result<HttpResponse, Error> {
     let conn = &data.conn;
     let query_inner = query.into_inner();
-    let (users, total) = User::get_user_list(conn, query_inner.clone()).await.map_err(|e| AppError::SystemError("find user list failed".to_string()))?;
+    let (users, total) = User::get_user_list(conn, query_inner.clone()).await.map_err(|_e| AppError::SystemError("find user list failed".to_string()))?;
     let page = Page::new(query_inner.page.page, query_inner.page.size, total);
     Ok(success_json(PageResponse::new(page, users)))
 }

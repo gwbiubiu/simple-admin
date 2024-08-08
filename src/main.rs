@@ -1,11 +1,10 @@
-use std::collections::HashSet;
 use std::env::set_var;
 use actix_web::{App, HttpRequest, HttpResponse, HttpServer, middleware, web, Error};
 use actix_web::middleware::TrailingSlash;
-use simple_admin::{AppState, Config, JwtMiddleware, routers};
+use simple_admin::{AppState, Config, routers};
 use anyhow::Result;
 use log::info;
-use sea_orm::{Database, DatabaseConnection};
+use sea_orm::{Database};
 
 #[tokio::main] // or
 async fn main() -> Result<()> {
@@ -38,6 +37,6 @@ async fn main() -> Result<()> {
 }
 
 
-async fn not_found(data: web::Data<AppState>, request: HttpRequest) -> Result<HttpResponse, Error> {
+async fn not_found(_data: web::Data<AppState>, _request: HttpRequest) -> Result<HttpResponse, Error> {
     Ok(HttpResponse::NotFound().body("Not Found 404"))
 }

@@ -7,4 +7,3 @@ pub use user::*;
 pub use auth::*;
 
 pub use api::*;
-pub use role::*;

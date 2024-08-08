@@ -3,6 +3,7 @@ mod user;
 mod auth;
 mod api;
 mod role;
+mod menu;
 
 use actix_web::{web};
 use serde::Serialize;

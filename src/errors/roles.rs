@@ -4,4 +4,6 @@ use thiserror::Error;
 pub enum RoleError {
     #[error("Role not found")]
     RoleNotFound,
+    #[error("Role has exists")]
+    RoleHasExists,
 }

@@ -19,3 +19,10 @@ CREATE TABLE `apis` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `path` (`path`,`method`)
 ) ENGINE=InnoDB;
+
+CREATE TABLE `roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB;

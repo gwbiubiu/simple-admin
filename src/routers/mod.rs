@@ -32,6 +32,11 @@ pub struct Response<T> {
     pub data: Option<T>,
 }
 
+#[derive(Serialize)]
+pub struct IdResponse {
+    pub id: i32,
+}
+
 
 pub fn json<T: Serialize>(res_body: T) -> actix_web::HttpResponse {
     actix_web::HttpResponse::Ok()

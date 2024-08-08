@@ -1,5 +1,6 @@
 pub mod user;
 pub mod api;
+pub mod roles;
 
 use actix_web::http::StatusCode;
 use actix_web::ResponseError;
@@ -20,6 +21,8 @@ pub enum AppError {
     UserError(UserError),
     #[error("Api Error")]
     ApiError(ApiError),
+    #[error("Role Error")]
+    RoleError(roles::RoleError),
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -42,6 +45,7 @@ impl ResponseError for AppError {
         let code = self.status_code();
         let message = match self {
             AppError::UserError(err) => err.to_string(),
+            AppError::ApiError(err) => err.to_string(),
             _ => self.to_string(),
         };
         actix_web::HttpResponse::build(code).json(ErrorResponse { message, code: code.as_u16() })

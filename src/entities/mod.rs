@@ -1,6 +1,6 @@
 pub mod user;
 pub mod api;
-mod role;
+pub mod role;
 
 pub use user::*;
 

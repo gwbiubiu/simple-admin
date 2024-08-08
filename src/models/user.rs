@@ -53,8 +53,8 @@ impl User {
         let total_users = user::Entity::find().filter(condition.clone()).count(db).await?;
         let users = user::Entity::find()
             .filter(condition)
-            .limit(query.page.size as u64)
-            .offset(query.page.page as u64 * query.page.size as u64)
+            .limit(query.page.size)
+            .offset(query.page.page * query.page.size)
             .all(db)
             .await?;
         Ok((users.into_iter().map(|u| Self {

@@ -1,17 +1,31 @@
 use sea_orm::*;
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
 use crate::entities::role;
 use crate::errors::{AppError, roles::RoleError::RoleNotFound};
+use crate::models::Page;
 
 pub struct Role {
     pub id: i32,
     pub name: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateRole {
+    pub name: String,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QueryRole {
+    #[serde(flatten)]
+    pub page: Page,
+}
+
 impl Role {
-    pub async fn create_role(db: &DbConn, name: String) -> Result<i32> {
+    pub async fn create_role(db: &DbConn, role: CreateRole) -> Result<i32, AppError> {
         let role = role::ActiveModel {
-            name: Set(name),
+            name: Set(role.name),
             ..Default::default()
         };
         let resp = role::Entity::insert(role)

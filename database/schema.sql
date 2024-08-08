@@ -16,5 +16,6 @@ CREATE TABLE `apis` (
   `path` varchar(255) NOT NULL DEFAULT '',
   `api_group` varchar(255) NOT NULL DEFAULT '',
   `method` varchar(10) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `path` (`path`,`method`)
 ) ENGINE=InnoDB;

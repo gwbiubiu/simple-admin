@@ -1,7 +1,8 @@
 pub mod user;
 mod auth;
-mod role;
+pub mod role;
 pub mod api;
+
 
 pub use user::*;
 

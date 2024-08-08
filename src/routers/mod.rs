@@ -14,6 +14,7 @@ pub fn router(cfg: &mut web::ServiceConfig) {
             .configure(ping::ping_router)
             .configure(auth::auth_router)
             .configure(api::api_router)
+            .configure(role::role_router)
     );
 }
 

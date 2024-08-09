@@ -2,7 +2,7 @@ use sea_orm::*;
 use anyhow::Result;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
-use crate::entities::{role};
+use crate::entities::{role, role_apis};
 use crate::errors::{AppError, AppError::RoleError, roles::RoleError::RoleNotFound, roles::RoleError::RoleHasExists};
 use crate::models::Page;
 
@@ -37,6 +37,13 @@ pub struct QueryRole {
     pub name: Option<String>,
     #[serde(flatten)]
     pub page: Page,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AddRoleApi {
+    pub role_id: i32,
+    pub api_id: Vec<i32>,
 }
 
 
@@ -107,5 +114,29 @@ impl Role {
             name: role.name,
         }).collect();
         Ok((roles, count))
+    }
+    
+    
+    pub async fn add_role_apis(db: &DbConn, role_api: AddRoleApi) -> Result<bool, AppError> {
+        let mut role_apis = vec![];
+        for api_id in role_api.api_id {
+            role_apis.push(role_apis::ActiveModel {
+                role_id: Set(role_api.role_id),
+                api_id: Set(api_id),
+                ..Default::default()
+            });
+        }
+        let resp = role_apis::Entity::insert_many(role_apis).on_conflict(
+            sea_query::OnConflict::columns([role_apis::Column::RoleId, role_apis::Column::ApiId])
+                .update_column(role_apis::Column::RoleId)
+                .to_owned())
+            .exec(db).await;
+        match resp {
+            Ok(_) => Ok(true),
+            Err(e) => match e {
+                DbErr::RecordNotInserted => Ok(false),
+                _ => Err(e.into()),
+            },
+        }
     }
 }

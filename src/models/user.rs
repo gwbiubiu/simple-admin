@@ -38,6 +38,18 @@ pub struct AddUserRole {
     pub role_id: Vec<i32>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DeleteUserRole {
+    pub user_id: i32,
+    pub role_id: i32,
+}
+
+pub struct UserInfo {
+    pub id: i32,
+    pub username: String,
+    pub roles: Vec<super::role::Role>,
+}
+
 
 impl User {
     pub async fn get_user_by_id(db: &DbConn, id: i32) -> Result<Self> {
@@ -94,6 +106,27 @@ impl User {
                 _ => Err(e),
             },
         }
+    }
+
+    pub async fn delete_user_role(db: &DatabaseConnection, user_role: DeleteUserRole) -> Result<bool, DbErr> {
+        let resp = user_role::Entity::delete_many()
+            .filter(user_role::Column::UserId.eq(user_role.user_id))
+            .filter(user_role::Column::RoleId.eq(user_role.role_id))
+            .exec(db).await;
+        match resp {
+            Ok(resp) => Ok(resp.rows_affected > 0),
+            Err(e) => Err(e),
+        }
+    }
+
+    pub async fn get_user_roles(db: &DatabaseConnection, user_id: i32) -> Result<Vec<i32>, DbErr> {
+        let user_roles = user_role::Entity::find()
+            .filter(user_role::Column::UserId.eq(user_id))
+            //.find_with_related(user::Entity::find().via(user_role::Relation::User))
+            .all(db)
+            .await?;
+        let ret = vec![];
+        Ok(ret)
     }
 }
 

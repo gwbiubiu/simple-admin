@@ -2,7 +2,7 @@ use sea_orm::*;
 use anyhow::Result;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
-use crate::entities::role;
+use crate::entities::{role};
 use crate::errors::{AppError, AppError::RoleError, roles::RoleError::RoleNotFound, roles::RoleError::RoleHasExists};
 use crate::models::Page;
 
@@ -38,6 +38,7 @@ pub struct QueryRole {
     #[serde(flatten)]
     pub page: Page,
 }
+
 
 impl Role {
     pub async fn create_role(db: &DbConn, role: CreateRole) -> Result<i32, AppError> {

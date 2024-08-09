@@ -16,3 +16,14 @@ pub enum Relation {}
 
 
 impl ActiveModelBehavior for ActiveModel {}
+
+
+impl Related<super::user::Entity> for Entity{
+    fn to() -> RelationDef {
+        super::user_role::Relation::User.def()
+    }
+
+    fn via() -> Option<RelationDef> {
+        Some(super::user_role::Relation::Role.def().rev())
+    }
+}

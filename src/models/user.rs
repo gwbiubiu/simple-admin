@@ -1,6 +1,6 @@
 use sea_orm::*;
 use serde::{Serialize, Deserialize};
-use crate::entities::user;
+use crate::entities::{user, user_role};
 use crate::errors::AppError;
 use crate::errors::user::UserError::NotFound;
 use anyhow::Result;
@@ -29,6 +29,13 @@ pub struct QueryUsers {
     pub username: Option<String>,
     #[serde(flatten)]
     pub page: Page,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AddUserRole {
+    pub user_id: i32,
+    pub role_id: Vec<i32>,
 }
 
 
@@ -64,5 +71,57 @@ impl User {
             password: None,
             enabled: u.enabled,
         }).collect(), total_users))
+    }
+
+    pub async fn add_user_roles(db: &DatabaseConnection, user_role: AddUserRole) -> Result<bool, DbErr> {
+        let mut user_roles = vec![];
+        for role_id in user_role.role_id {
+            user_roles.push(user_role::ActiveModel {
+                user_id: ActiveValue::Set(user_role.user_id),
+                role_id: ActiveValue::Set(role_id),
+                ..Default::default()
+            });
+        }
+        let resp = user_role::Entity::insert_many(user_roles).on_conflict(
+            sea_query::OnConflict::columns([user_role::Column::UserId, user_role::Column::RoleId])
+                .update_column(user_role::Column::UserId)
+                .to_owned())
+            .exec(db).await;
+        match resp {
+            Ok(_) => Ok(true),
+            Err(e) => match e {
+                DbErr::RecordNotInserted => Ok(false),
+                _ => Err(e),
+            },
+        }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add_user_roles() {
+        let user_role = AddUserRole {
+            user_id: 1,
+            role_id: vec![1, 3],
+        };
+        let mut user_roles = vec![];
+        for role_id in user_role.role_id {
+            user_roles.push(user_role::ActiveModel {
+                user_id: ActiveValue::Set(user_role.user_id),
+                role_id: ActiveValue::Set(role_id),
+                ..Default::default()
+            });
+        }
+        assert_eq!(user_role::Entity::insert_many(user_roles).on_conflict(
+            sea_query::OnConflict::columns([user_role::Column::UserId, user_role::Column::RoleId])
+                .update_column(user_role::Column::UserId)
+                .to_owned())
+            .build(DbBackend::MySql)
+            .to_string(), r#"INSERT INTO `user_roles` (`user_id`, `role_id`) VALUES (1, 1), (1, 3) ON DUPLICATE KEY UPDATE `user_id` = VALUES(`user_id`)"#,
+            );
     }
 }

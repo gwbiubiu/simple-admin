@@ -52,3 +52,4 @@ async fn delete_role(data: web::Data<AppState>, id: web::Path<i32>) -> Result<Ht
     let resp = services::role::Role::delete_role(db, id.into_inner()).await?;
     Ok(success_json(resp))
 }
+

@@ -13,6 +13,7 @@ pub fn user_router(cfg: &mut web::ServiceConfig) {
             .service(create_user)
             .service(update_user_status)
             .service(get_user_list)
+            .service(add_user_roles)
     );
 }
 
@@ -50,4 +51,15 @@ async fn get_user_list(data: web::Data<AppState>, query: web::Query<models::Quer
     let (users, total) = User::get_user_list(conn, query_inner.clone()).await.map_err(|_e| AppError::SystemError("find user list failed".to_string()))?;
     let page = Page::new(query_inner.page.page, query_inner.page.size, total);
     Ok(success_json(PageResponse::new(page, users)))
+}
+
+#[post("/{id}/roles")]
+async fn add_user_roles(data: web::Data<AppState>, id: web::Path<i32>, roles: web::Json<Vec<i32>>) -> Result<HttpResponse, Error> {
+    let conn = &data.conn;
+    let user_role = models::AddUserRole {
+        user_id: id.into_inner(),
+        role_id: roles.into_inner(),
+    };
+    let ret = User::add_user_roles(conn, user_role).await?;
+    Ok(success_json(ret))
 }

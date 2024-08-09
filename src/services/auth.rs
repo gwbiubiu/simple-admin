@@ -23,10 +23,6 @@ impl Auth {
             Err(_) => Err(AppError::SystemError("生成token失败".to_string())),
         }
     }
-
-    pub async fn logout() {
-        // code here
-    }
 }
 
 

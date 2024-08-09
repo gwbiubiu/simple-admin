@@ -2,7 +2,6 @@ use sea_orm::*;
 use anyhow::Result;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
-use crate::entities;
 use crate::entities::role;
 use crate::errors::{AppError, AppError::RoleError, roles::RoleError::RoleNotFound, roles::RoleError::RoleHasExists};
 use crate::models::Page;
@@ -35,6 +34,7 @@ pub struct UpdateRole {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QueryRole {
+    pub name: Option<String>,
     #[serde(flatten)]
     pub page: Page,
 }
@@ -62,15 +62,6 @@ impl Role {
         }
         Err(RoleError(RoleNotFound))
     }
-
-    pub async fn get_role_list(db: &DbConn) -> Result<Vec<Self>> {
-        let roles = role::Entity::find().all(db).await?;
-        Ok(roles.into_iter().map(|role| Self {
-            id: role.id,
-            name: role.name,
-        }).collect())
-    }
-
     pub async fn update_role(db: &DbConn, id: i32, role: UpdateRole) -> Result<bool, AppError> {
         let old_role = role::Entity::find_by_id(id).one(db).await?;
         if let Some(old_role) = old_role {
@@ -90,5 +81,30 @@ impl Role {
             return Ok(true);
         }
         Err(RoleError(RoleNotFound))
+    }
+
+    pub async fn delete_role(db: &DbConn, id: i32) -> Result<bool, AppError> {
+        let resp = role::Entity::delete_by_id(id).exec(db).await?;
+        return Ok(resp.rows_affected > 0);
+    }
+
+
+    pub async fn role_list(db: &DbConn, query: QueryRole) -> Result<(Vec<Self>, u64), AppError> {
+        let mut query_builder = role::Entity::find();
+        if let Some(name) = query.name {
+            query_builder = query_builder.filter(role::Column::Name.contains(name));
+        }
+
+        let count = query_builder.clone().count(db).await?;
+        let roles = query_builder
+            .limit(query.page.size)
+            .offset(query.page.page * query.page.size)
+            .all(db)
+            .await?;
+        let roles = roles.into_iter().map(|role| Self {
+            id: role.id,
+            name: role.name,
+        }).collect();
+        Ok((roles, count))
     }
 }

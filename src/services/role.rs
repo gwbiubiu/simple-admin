@@ -15,9 +15,20 @@ impl Role {
         let role = role::Role::get_role_by_id(db, id).await?;
         Ok(role)
     }
-    
+
     pub async fn update_role(db: &DbConn, id: i32, role: role::UpdateRole) -> Result<bool, AppError> {
         let resp = role::Role::update_role(db, id, role).await?;
+        Ok(resp)
+    }
+
+
+    pub async fn delete_role(db: &DbConn, id: i32) -> Result<bool, AppError> {
+        let resp = role::Role::delete_role(db, id).await?;
+        Ok(resp)
+    }
+
+    pub async fn list_role(db: &DbConn, query: role::QueryRole) -> Result<(Vec<role::Role>, u64), AppError> {
+        let resp = role::Role::role_list(db, query).await?;
         Ok(resp)
     }
 }

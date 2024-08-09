@@ -46,6 +46,14 @@ impl Page {
     pub fn new(page: u64, size: u64, total: u64) -> Self {
         Self { page, size, total }
     }
+
+    pub fn new_with_total(&self, total: u64) -> Self {
+        Self {
+            page: self.page,
+            size: self.size,
+            total,
+        }
+    }
 }
 
 fn page_size() -> u64 {

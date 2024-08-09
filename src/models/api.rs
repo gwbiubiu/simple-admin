@@ -149,8 +149,8 @@ impl Api {
         }
         let total = query_builder.clone().count(db).await?;
         let api_list = query_builder
-            .limit(query.page.size)
-            .offset(query.page.page * query.page.size)
+            // .limit(query.page.size)
+            // .offset(query.page.page * query.page.size)
             .all(db)
             .await?;
         let mut api_category = ApiCategory {

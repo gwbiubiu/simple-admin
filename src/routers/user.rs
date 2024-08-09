@@ -1,4 +1,4 @@
-use actix_web::{get, HttpResponse, post, web, Error, ResponseError, put};
+use actix_web::{get, HttpResponse, post, web, Error, put};
 use crate::global::AppState;
 use crate::{models, success_json};
 use crate::services::User;

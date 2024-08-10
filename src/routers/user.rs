@@ -1,4 +1,4 @@
-use actix_web::{get, HttpResponse, post, web, Error, put};
+use actix_web::{get, HttpResponse, post, web, Error, put, delete};
 use crate::global::AppState;
 use crate::{models, success_json};
 use crate::services::User;
@@ -14,6 +14,7 @@ pub fn user_router(cfg: &mut web::ServiceConfig) {
             .service(update_user_status)
             .service(get_user_list)
             .service(add_user_roles)
+            .service(delete_user_role)
     );
 }
 
@@ -61,5 +62,17 @@ async fn add_user_roles(data: web::Data<AppState>, id: web::Path<i32>, roles: we
         role_id: roles.into_inner(),
     };
     let ret = User::add_user_roles(conn, user_role).await?;
+    Ok(success_json(ret))
+}
+
+#[delete("/{user_id:\\d+}/role/{role_id:\\d+}")]
+async fn delete_user_role(data: web::Data<AppState>, path: web::Path<(i32, i32)>) -> Result<HttpResponse, Error> {
+    let conn = &data.conn;
+    let (user_id, role_id) = path.into_inner();
+    let user_role = models::DeleteUserRole {
+        user_id: user_id,
+        role_id: role_id,
+    };
+    let ret = User::delete_user_role(conn, user_role).await?;
     Ok(success_json(ret))
 }

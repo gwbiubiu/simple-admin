@@ -17,9 +17,8 @@ pub fn role_router(cfg: &mut web::ServiceConfig) {
 
 #[get("/list")]
 async fn role_list(data: web::Data<AppState>, query: web::Query<role::QueryRole>) -> Result<HttpResponse, Error> {
-    let db = &data.conn;
     let query = query.into_inner();
-    let roles = services::role::Role::list_role(db, query.clone()).await?;
+    let roles = services::role::Role::list_role(&data.conn, query.clone()).await?;
     Ok(success_json((roles.0, query.page.new_with_total(roles.1))))
 }
 
@@ -48,8 +47,7 @@ async fn update_role(data: web::Data<AppState>, id: web::Path<i32>, role: web::J
 
 #[delete("/{id}")]
 async fn delete_role(data: web::Data<AppState>, id: web::Path<i32>) -> Result<HttpResponse, Error> {
-    let db = &data.conn;
-    let resp = services::role::Role::delete_role(db, id.into_inner()).await?;
+    let resp = services::role::Role::delete_role(&data.conn, id.into_inner()).await?;
     Ok(success_json(resp))
 }
 

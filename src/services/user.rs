@@ -51,4 +51,10 @@ impl User {
         let resp = models::User::add_user_roles(db, user_role).await?;
         Ok(resp)
     }
+    
+    
+    pub async fn delete_user_role(db: &DbConn, user_role: models::DeleteUserRole) -> Result<bool, AppError> {
+        let resp = models::User::delete_user_role(db, user_role).await?;
+        Ok(resp)
+    }
 }

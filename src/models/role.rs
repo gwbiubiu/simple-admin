@@ -2,8 +2,9 @@ use sea_orm::*;
 use anyhow::Result;
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
-use crate::entities::{role, role_apis};
+use crate::entities::{role, role_apis, user_role};
 use crate::errors::{AppError, AppError::RoleError, roles::RoleError::RoleNotFound, roles::RoleError::RoleHasExists};
+use crate::errors::roles::RoleError::CrrrentRoleHasUser;
 use crate::models::Page;
 
 #[allow(dead_code)]
@@ -92,6 +93,11 @@ impl Role {
     }
 
     pub async fn delete_role(db: &DbConn, id: i32) -> Result<bool, AppError> {
+        let count = user_role::Entity::find().
+            filter(user_role::Column::RoleId.eq(id)).count(db).await?;
+        if count > 0 {
+            return Err(RoleError(CrrrentRoleHasUser));
+        }
         let resp = role::Entity::delete_by_id(id).exec(db).await?;
         return Ok(resp.rows_affected > 0);
     }
@@ -115,8 +121,8 @@ impl Role {
         }).collect();
         Ok((roles, count))
     }
-    
-    
+
+
     pub async fn add_role_apis(db: &DbConn, role_api: AddRoleApi) -> Result<bool, AppError> {
         let mut role_apis = vec![];
         for api_id in role_api.api_id {

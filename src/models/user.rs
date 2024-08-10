@@ -1,9 +1,10 @@
 use sea_orm::*;
 use serde::{Serialize, Deserialize};
-use crate::entities::{user, user_role};
+use crate::entities::{user, user_role, role};
 use crate::errors::AppError;
 use crate::errors::user::UserError::NotFound;
 use anyhow::Result;
+use crate::errors::AppError::UserError;
 use super::Page;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -44,26 +45,16 @@ pub struct DeleteUserRole {
     pub role_id: i32,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserInfo {
     pub id: i32,
     pub username: String,
+    pub email: String,
     pub roles: Vec<super::role::Role>,
 }
 
 
 impl User {
-    pub async fn get_user_by_id(db: &DbConn, id: i32) -> Result<Self> {
-        let user = user::Entity::find_by_id(id).one(db).await?;
-        let user = user.ok_or(AppError::UserError(NotFound))?;
-        Ok(Self {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            password: None,
-            enabled: user.enabled,
-        })
-    }
-
     pub async fn get_user_list(db: &DbConn, query: QueryUsers) -> Result<(Vec<Self>, u64)> {
         let mut condition = Condition::all();
         if let Some(username) = query.username {
@@ -119,14 +110,28 @@ impl User {
         }
     }
 
-    pub async fn get_user_roles(db: &DatabaseConnection, user_id: i32) -> Result<Vec<i32>, DbErr> {
-        let user_roles = user_role::Entity::find()
+    pub async fn get_user_info(db: &DatabaseConnection, user_id: i32) -> Result<UserInfo, AppError> {
+        let user_with_roles = user::Entity::find()
             .filter(user_role::Column::UserId.eq(user_id))
-            //.find_with_related(user::Entity::find().via(user_role::Relation::User))
+            .find_with_related(role::Entity)
             .all(db)
             .await?;
-        let ret = vec![];
-        Ok(ret)
+
+        if user_with_roles.is_empty() {
+            return Err(UserError(NotFound));
+        }
+
+        let (user, roles) = &user_with_roles[0];
+        let user_info = UserInfo {
+            id: user.id,
+            username: user.username.to_owned(),
+            email: user.email.to_owned(),
+            roles: roles.iter().map(|r| super::role::Role {
+                id: r.id,
+                name: r.name.to_owned(),
+            }).collect(),
+        };
+        Ok(user_info)
     }
 }
 

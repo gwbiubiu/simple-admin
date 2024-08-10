@@ -25,8 +25,8 @@ pub fn user_router(cfg: &mut web::ServiceConfig) {
 #[get("/{id:\\d+}")]
 async fn get_user_by_id(data: web::Data<AppState>, id: web::Path<i32>) -> Result<HttpResponse, Error> {
     let conn = &data.conn;
-    let ret = User::find_user_by_id(conn, id.into_inner()).await.map_err(|_e| AppError::SystemError("find user failed".to_string()))?;
-    return Ok(HttpResponse::Ok().json(ret));
+    let user_info = User::find_user_by_id(conn, id.into_inner()).await?;
+    return Ok(success_json(user_info));
 }
 
 #[post("")]

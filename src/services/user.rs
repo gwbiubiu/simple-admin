@@ -7,6 +7,7 @@ use password_hash::rand_core::OsRng;
 use password_hash::{PasswordHasher, SaltString};
 use sea_orm::prelude::Expr;
 use crate::errors::AppError;
+use crate::models::UserInfo;
 
 
 pub struct User;
@@ -26,8 +27,9 @@ impl User {
         Ok(rsp.last_insert_id)
     }
 
-    pub async fn find_user_by_id(db: &DbConn, id: i32) -> Result<models::User> {
-        models::User::get_user_by_id(db, id).await
+    pub async fn find_user_by_id(db: &DbConn, id: i32) -> Result<UserInfo, AppError> {
+        let ret = models::User::get_user_info(db, id).await?;
+        Ok(ret)
     }
 
 
@@ -46,7 +48,7 @@ impl User {
 
 
     pub async fn add_user_roles(db: &DbConn, user_role: models::AddUserRole) -> Result<bool, AppError> {
-        let  resp= models::User::add_user_roles(db, user_role).await?;
+        let resp = models::User::add_user_roles(db, user_role).await?;
         Ok(resp)
     }
 }

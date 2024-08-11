@@ -4,7 +4,7 @@ use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
 use crate::entities::{role, role_apis, user_role};
 use crate::errors::{AppError, AppError::RoleError, roles::RoleError::RoleNotFound, roles::RoleError::RoleHasExists};
-use crate::errors::roles::RoleError::CrrrentRoleHasUser;
+use crate::errors::roles::RoleError::CurrentRoleHasUser;
 use crate::models::Page;
 
 #[allow(dead_code)]
@@ -43,8 +43,9 @@ pub struct QueryRole {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AddRoleApi {
+    #[serde(default)]
     pub role_id: i32,
-    pub api_id: Vec<i32>,
+    pub api_ids: Vec<i32>,
 }
 
 
@@ -96,7 +97,7 @@ impl Role {
         let count = user_role::Entity::find().
             filter(user_role::Column::RoleId.eq(id)).count(db).await?;
         if count > 0 {
-            return Err(RoleError(CrrrentRoleHasUser));
+            return Err(RoleError(CurrentRoleHasUser));
         }
         let resp = role::Entity::delete_by_id(id).exec(db).await?;
         return Ok(resp.rows_affected > 0);
@@ -123,9 +124,22 @@ impl Role {
     }
 
 
-    pub async fn add_role_apis(db: &DbConn, role_api: AddRoleApi) -> Result<bool, AppError> {
+    pub async fn delete_role_api_by_role_id<T>(db: &T, role_id: i32) -> Result<bool, DbErr>
+    where
+        T: ConnectionTrait + TransactionTrait,
+    {
+        let resp = role_apis::Entity::delete_many()
+            .filter(role_apis::Column::RoleId.eq(role_id))
+            .exec(db)
+            .await?;
+        Ok(resp.rows_affected > 0)
+    }
+    pub async fn role_add_apis<T>(db: &T, role_api: AddRoleApi) -> Result<bool, DbErr>
+    where
+        T: ConnectionTrait + TransactionTrait,
+    {
         let mut role_apis = vec![];
-        for api_id in role_api.api_id {
+        for api_id in role_api.api_ids {
             role_apis.push(role_apis::ActiveModel {
                 role_id: Set(role_api.role_id),
                 api_id: Set(api_id),

@@ -47,6 +47,7 @@ impl ResponseError for AppError {
             AppError::UserError(err) => err.to_string(),
             AppError::ApiError(err) => err.to_string(),
             AppError::RoleError(err) => err.to_string(),
+            AppError::SystemError(msg) => msg.to_string(),
             _ => self.to_string(),
         };
         actix_web::HttpResponse::build(code).json(ErrorResponse { message, code: code.as_u16() })

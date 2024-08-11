@@ -37,3 +37,13 @@ CREATE TABLE `user_roles` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`,`role_id`)
 ) ENGINE=InnoDB;
+
+
+
+CREATE TABLE `role_apis` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `role_id` int DEFAULT NULL,
+	`api_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`role_id`,`api_id`)
+) ENGINE=InnoDB;

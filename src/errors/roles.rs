@@ -7,5 +7,5 @@ pub enum RoleError {
     #[error("Role has exists")]
     RoleHasExists,
     #[error("Current Role has user Please delete the user role relation")]
-    CrrrentRoleHasUser,
+    CurrentRoleHasUser,
 }

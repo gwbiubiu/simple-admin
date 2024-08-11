@@ -5,3 +5,4 @@ edition = "2021"
 authors = ["Wei.Ge <gwbiubiu@gmail.com>"]
 
 [dependencies]
+yew = { version = "0.21.0", features = ["csr"] }

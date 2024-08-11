@@ -1,0 +1,7 @@
+[package]
+name = "web"
+version = "0.1.0"
+edition = "2021"
+authors = ["Wei.Ge <gwbiubiu@gmail.com>"]
+
+[dependencies]

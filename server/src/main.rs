@@ -1,10 +1,10 @@
 use std::env::set_var;
 use actix_web::{App, HttpRequest, HttpResponse, HttpServer, middleware, web, Error};
 use actix_web::middleware::TrailingSlash;
-use simple_admin::{AppState, Config, routers};
 use anyhow::Result;
 use log::info;
 use sea_orm::{Database};
+use server::{Config, AppState, routers};
 
 #[tokio::main] // or
 async fn main() -> Result<()> {

@@ -5,4 +5,5 @@ edition = "2021"
 authors = ["Wei.Ge <gwbiubiu@gmail.com>"]
 
 [dependencies]
+web-sys = "0.3.70"
 yew = { version = "0.21.0", features = ["csr"] }

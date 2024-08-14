@@ -2,10 +2,14 @@ use yew::prelude::*;
 use web_sys::{console, window};
 use crate::apis::login::{login, Msg};
 
+use crate::components::error::ErrorComponent;
+
 pub struct Login {
     username: String,
     password: String,
     remember_me: bool,
+    show_error: bool,
+    error_msg: String,
 }
 
 
@@ -21,6 +25,8 @@ impl Component for Login {
             username: saved_username,
             password: String::new(),
             remember_me: tag,
+            show_error: false,
+            error_msg: String::new(),
         }
     }
 
@@ -50,6 +56,8 @@ impl Component for Login {
                     storage.remove_item("remembered_username").unwrap();
                 }
                 _ctx.link().send_future(login(self.username.clone(), self.password.clone()));
+                self.error_msg = "this is an error message".to_string();
+                self.show_error = true;
                 true
             }
             Msg::LoginSuccess(msg) => {
@@ -62,6 +70,10 @@ impl Component for Login {
                 console::log_2(&"Message:".into(), &msg.into());
                 false
             }
+            Msg::HideError => {
+                self.show_error = false;
+                true
+            }
         }
     }
 
@@ -73,7 +85,13 @@ impl Component for Login {
 
 
         html! {
-            <div class="container">
+            <div>
+            <ErrorComponent
+            error_message={"this is an error message".to_string()}
+            show={self.show_error}
+            on_close={ctx.link().callback(|_| Msg::HideError)}
+            />
+             <div class="container">
                 <div class="row justify-content-center mt-5">
                     <div class="col-md-4">
                         <div class="card">
@@ -117,6 +135,8 @@ impl Component for Login {
                     </div>
                 </div>
             </div>
+            </div>
+
         }
     }
 }

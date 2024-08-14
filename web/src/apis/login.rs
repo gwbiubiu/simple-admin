@@ -11,6 +11,7 @@ pub enum Msg {
     Submit,
     LoginSuccess(String),
     LoginFailed(String),
+    HideError,
 }
 
 #[derive(Serialize)]

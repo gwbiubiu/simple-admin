@@ -12,3 +12,4 @@ yew = { version = "0.21.0", features = ["csr"] }
 serde = { workspace = true }
 anyhow = { workspace = true }
 serde_json = { workspace = true }
+gloo = "0.11.0"

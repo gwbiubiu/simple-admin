@@ -1,2 +1,3 @@
-pub mod view;
+pub mod views;
 mod apis;
+mod components;

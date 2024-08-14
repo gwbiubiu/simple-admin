@@ -16,7 +16,7 @@ impl Component for UserList {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self{}
+        Self {}
     }
 
     fn view(&self, _ctx: &Context<Self>) -> Html {
@@ -33,7 +33,7 @@ impl Component for UserList {
                         <th>{"ID"}</th>
                         <th>{"用户名"}</th>
                         <th>{"邮箱"}</th>
-                        <th>{"注册日期"}</th>
+                        <th>{"创建时间"}</th>
                         <th>{"操作"}</th>
                     </tr>
                 </thead>

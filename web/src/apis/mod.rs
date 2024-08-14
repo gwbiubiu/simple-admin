@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 
 pub mod login;
-
+mod user;
 
 #[derive(Deserialize)]
 pub enum Status {

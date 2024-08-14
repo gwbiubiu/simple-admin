@@ -46,7 +46,7 @@ pub fn login(username: String, password: String) -> impl Future<Output=Msg> {
                             Ok(token) => {
                                 Msg::LoginSuccess(token.token)
                             }
-                            Err(e) => Msg::LoginFailed(resp.message),
+                            Err(_) => Msg::LoginFailed(resp.message),
                         }
                     }
                     Err(e) => Msg::LoginFailed(format!("Failed to parse response: {}", e)),

@@ -13,6 +13,7 @@ pub enum Status {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 pub struct Response<T> {
     pub status: Status,
     pub code: i64,

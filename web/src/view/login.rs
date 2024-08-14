@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use web_sys::{console, window};
+use crate::apis::login::{login, Msg};
 
 pub struct Login {
     username: String,
@@ -7,12 +8,6 @@ pub struct Login {
     remember_me: bool,
 }
 
-pub enum Msg {
-    UpdateUsername(String),
-    UpdatePassword(String),
-    ToggleRememberMe,
-    Submit,
-}
 
 impl Component for Login {
     type Message = Msg;
@@ -54,7 +49,18 @@ impl Component for Login {
                 } else {
                     storage.remove_item("remembered_username").unwrap();
                 }
+                _ctx.link().send_future(login(self.username.clone(), self.password.clone()));
                 true
+            }
+            Msg::LoginSuccess(msg) => {
+                console::log_1(&"Login success".into());
+                console::log_2(&"Token:".into(), &msg.into());
+                false
+            }
+            Msg::LoginFailed(msg) => {
+                console::log_1(&"Login failed".into());
+                console::log_2(&"Message:".into(), &msg.into());
+                false
             }
         }
     }

@@ -5,6 +5,7 @@ use anyhow::Result;
 use log::info;
 use sea_orm::{Database};
 use server::{Config, AppState, routers};
+use actix_cors::Cors;
 
 #[tokio::main] // or
 async fn main() -> Result<()> {
@@ -21,8 +22,17 @@ async fn main() -> Result<()> {
     let state = web::Data::new(AppState { conn });
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin("http://127.0.0.1:8081")
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE)
+            .max_age(3600);
+
+
         App::new()
             .app_data(state.clone())
+            .wrap(cors)
             .wrap(middleware::Logger::default())
             .wrap(middleware::NormalizePath::new(TrailingSlash::Trim))
             //.wrap(JwtMiddleware)

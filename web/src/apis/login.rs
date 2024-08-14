@@ -36,7 +36,7 @@ impl Login {
 pub fn login(username: String, password: String) -> impl Future<Output=Msg> {
     async move {
         let param = Login::new(username, password);
-        match post::<Login, Value>("/login", param).await {
+        match post::<Login, Value>("/api/v1/login", param).await {
             Ok(json_value) => {
                 // 这里可以处理 token，例如存储到本地存储
                 match serde_json::from_value::<Response<Value>>(json_value) {

@@ -21,7 +21,7 @@ pub struct Response<T> {
 }
 
 
-const BASE_URL: &str = "http://localhost:8000";
+const BASE_URL: &str = "http://127.0.0.1:8080";
 
 pub fn with_path(path: &str) -> String {
     format!("{}{}", BASE_URL, path)

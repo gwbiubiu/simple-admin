@@ -9,7 +9,7 @@ authors = ["Wei.Ge <gwbiubiu@gmail.com>"]
 [dependencies]
 actix-web = { version = "4.8.0" }
 serde = { workspace = true }
-anyhow = "1.0.86"
+anyhow ={ workspace = true }
 toml = "0.8.19"
 log = "0.4.22"
 env_logger = "0.10"
@@ -23,3 +23,5 @@ argon2 = "0.5.3"
 jsonwebtoken = "9.3.0"
 time = "0.3.36"
 futures = "0.3.30"
+http = "0.2.12"
+actix-cors = "0.7.0"

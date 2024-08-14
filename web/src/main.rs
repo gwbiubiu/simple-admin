@@ -1,5 +1,4 @@
-use yew::prelude::*;
-use web::views::login::Login;
+use web::views::App;
 fn main() {
-    yew::Renderer::<Login>::new().render();
+    yew::Renderer::<App>::new().render();
 }

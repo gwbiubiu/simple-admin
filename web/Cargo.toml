@@ -13,3 +13,4 @@ serde = { workspace = true }
 anyhow = { workspace = true }
 serde_json = { workspace = true }
 gloo = "0.11.0"
+yew-router = "0.18.0"

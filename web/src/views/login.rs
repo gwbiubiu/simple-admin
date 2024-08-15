@@ -2,7 +2,6 @@ use yew::prelude::*;
 use web_sys::{console, window};
 use crate::apis::login::{login, Msg};
 
-use crate::components::error::ErrorComponent;
 
 pub struct Login {
     username: String,
@@ -86,11 +85,6 @@ impl Component for Login {
 
         html! {
             <div>
-            <ErrorComponent
-            error_message={"this is an error message".to_string()}
-            show={self.show_error}
-            on_close={ctx.link().callback(|_| Msg::HideError)}
-            />
              <div class="container">
                 <div class="row justify-content-center mt-5">
                     <div class="col-md-4">

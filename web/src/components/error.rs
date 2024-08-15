@@ -1,69 +1,71 @@
+use std::rc::Rc;
 use yew::prelude::*;
 use gloo::timers::callback::Timeout;
+use yewdux::prelude::*;
 
-pub struct ErrorComponent {
-    close_timeout: Option<Timeout>,
+
+#[derive(Default, Clone, PartialEq, Eq, Store)]
+pub struct ErrorState {
+    message: Option<String>,
 }
 
-
-#[derive(Properties, PartialEq)]
-pub struct ErrorComponentProps {
-    pub error_message: String,
-    pub show: bool,
-    pub on_close: Callback<()>,
+pub enum ErrorAction {
+    SetError(String),
+    ClearError,
 }
 
-pub enum Msg {
-    Close
-}
-
-impl Component for ErrorComponent {
-    type Message = Msg;
-    type Properties = ErrorComponentProps;
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            close_timeout: None,
-        }
-    }
-
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::Close => {
-                _ctx.props().on_close.emit(());
-                true
+impl Reducer<ErrorState> for ErrorAction {
+    fn apply(self, mut state: Rc<ErrorState>) -> Rc<ErrorState> {
+        let mut state = Rc::make_mut(&mut state);
+        match self {
+            ErrorAction::SetError(message) => {
+                state.message = Some(message);
+            }
+            ErrorAction::ClearError => {
+                state.message = None;
             }
         }
+        Rc::new(state.clone())
     }
+}
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let props = ctx.props();
 
-        if !props.show {
-            return html! {};
-        }
+#[function_component(ErrorComponent)]
+pub fn error_component() -> Html {
+    let (state, dispatch) = use_store::<ErrorState>();
 
+    {
+        let dispatch = dispatch.clone();
+        let state = state.clone();
+        use_effect(
+            move || {
+                if state.message.is_some() {
+                    let timeout = Timeout::new(5000, move || {
+                        dispatch.apply(ErrorAction::ClearError);
+                    });
+                    timeout.forget();
+                }
+                || {}
+            },
+        );  
+    }
+    
+
+    let close = {
+        let dispatch = dispatch.clone();
+        Callback::from(move |_| dispatch.apply(ErrorAction::ClearError))
+    };
+
+    if let Some(error_message) = &state.message {
         html! {
             <div class="container mt-3">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>{"错误："}</strong> {&props.error_message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick={ctx.props().on_close.reform(|_| ())}></button>
+                    <strong>{"错误："}</strong> {error_message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick={close}></button>
                 </div>
             </div>
         }
-    }
-
-    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
-        if ctx.props().show {
-            let link = ctx.link().clone();
-            self.close_timeout = Some(Timeout::new(5000, move || {
-                link.send_message(Msg::Close);
-            }));
-        }
-        true
-    }
-
-    fn destroy(&mut self, _ctx: &Context<Self>) {
-        self.close_timeout = None;
+    } else {
+        html! {}
     }
 }

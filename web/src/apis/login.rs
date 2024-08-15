@@ -1,7 +1,6 @@
 use std::future::Future;
 use serde::{Deserialize, Serialize};
-use super::{post, Response};
-use serde_json::Value;
+use super::{post, Status};
 
 
 pub enum Msg {
@@ -10,7 +9,7 @@ pub enum Msg {
     ToggleRememberMe,
     Submit,
     LoginSuccess(String),
-    LoginFailed(String),
+    Error(String),
     HideError,
 }
 
@@ -37,22 +36,14 @@ impl Login {
 pub fn login(username: String, password: String) -> impl Future<Output=Msg> {
     async move {
         let param = Login::new(username, password);
-        match post::<Login, Value>("/api/v1/login", param).await {
-            Ok(json_value) => {
-                // 这里可以处理 token，例如存储到本地存储
-                match serde_json::from_value::<Response<Value>>(json_value) {
-                    Ok(resp) => {
-                        match serde_json::from_value::<RespToken>(resp.data.unwrap()) {
-                            Ok(token) => {
-                                Msg::LoginSuccess(token.token)
-                            }
-                            Err(_) => Msg::LoginFailed(resp.message),
-                        }
-                    }
-                    Err(e) => Msg::LoginFailed(format!("Failed to parse response: {}", e)),
+        match post::<Login, RespToken>("/api/v1/login", param).await {
+            Ok(resp) => {
+                if resp.status == Status::SUCCESS {
+                    return Msg::LoginSuccess(resp.data.unwrap().token);
                 }
+                return Msg::Error(resp.message);
             }
-            Err(_) => Msg::LoginFailed("Server Internal error".to_string()),
+            Err(_) => Msg::Error("Server Internal error".to_string()),
         }
     }
 }

@@ -3,14 +3,12 @@ use yew_router::prelude::*;
 
 pub mod login;
 pub mod not_found;
-mod user;
+pub mod user;
 mod role;
 mod dashboard;
 
 use login::Login;
 use not_found::NotFound;
-use user::UserList;
-use role::RoleList;
 use dashboard::Dashboard;
 
 

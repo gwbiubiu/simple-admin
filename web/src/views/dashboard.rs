@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use super::{UserList, RoleList};
+use super::{role::RoleList, user::User};
 
 pub struct Dashboard {
     active_route: DashboardRoute,
@@ -89,7 +89,7 @@ impl Dashboard {
     fn switch(routes: DashboardRoute) -> Html {
         match routes {
             DashboardRoute::Home => html! { <h1>{ "欢迎来到仪表盘" }</h1> },
-            DashboardRoute::Users => html! { <UserList /> },
+            DashboardRoute::Users => html! { <User /> },
             DashboardRoute::Roles => html! { <RoleList /> },
         }
     }

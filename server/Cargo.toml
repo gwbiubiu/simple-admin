@@ -9,11 +9,11 @@ authors = ["Wei.Ge <gwbiubiu@gmail.com>"]
 [dependencies]
 actix-web = { version = "4.8.0" }
 serde = { workspace = true }
-anyhow ={ workspace = true }
+anyhow = { workspace = true }
+chrono = { workspace = true }
 toml = "0.8.19"
 log = "0.4.22"
 env_logger = "0.10"
-chrono = "0.4.38"
 tokio = { version = "1", features = ["rt", "net", "rt-multi-thread", "macros"] }
 tracing-subscriber = "0.3.18"
 sea-orm = { version = "1.0.0", features = ["sqlx-mysql", "runtime-tokio-rustls"] }

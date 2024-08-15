@@ -3572,6 +3572,7 @@ name = "web"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "gloo 0.11.0",
  "gloo-net 0.6.0",
  "serde",

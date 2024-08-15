@@ -1,29 +1,43 @@
+use web_sys::console;
 use yew::prelude::*;
+use crate::apis::user::{get_user_list, Msg, QueryUserParams, UserListResp};
 
-pub struct UserList {}
-
-
-struct User {
-    id: u32,
-    username: String,
-    email: String,
-    register_date: String,
+pub struct User {
+    user_list: Option<UserListResp>,
 }
 
 
-impl Component for UserList {
-    type Message = ();
+impl Component for User {
+    type Message = Msg;
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self {}
+        _ctx.link().send_future(get_user_list(QueryUserParams::new()));
+        Self {
+            user_list: None,
+        }
     }
 
+
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+        match msg {
+            Msg::UserList(resp) => {
+                self.user_list = Some(resp);
+                true
+            }
+            Msg::Error(msg) => {
+                console::log_2(&"get user list error".into(), &msg.into());
+                false
+            }
+        }
+    }
+
+
     fn view(&self, _ctx: &Context<Self>) -> Html {
-        let users = vec![
-            User { id: 1, username: "张三".to_string(), email: "zhangsan@example.com".to_string(), register_date: "2023-01-01".to_string() },
-            User { id: 2, username: "李四".to_string(), email: "lisi@example.com".to_string(), register_date: "2023-02-15".to_string() },
-        ];
+        let users = match &self.user_list {
+            Some(resp) => &resp.items,
+            None => &vec![],
+        };
         html! {
         <div>
             <h2>{"用户管理"}</h2>
@@ -43,7 +57,7 @@ impl Component for UserList {
                             <td>{user.id}</td>
                             <td>{&user.username}</td>
                             <td>{&user.email}</td>
-                            <td>{&user.register_date}</td>
+                            <td>{&user.create_time.format("%Y-%m-%d %H:%M:%S").to_string()}</td>
                             <td>
                                 <button class="btn btn-sm btn-info me-2">{"编辑"}</button>
                                 <button class="btn btn-sm btn-danger">{"删除"}</button>

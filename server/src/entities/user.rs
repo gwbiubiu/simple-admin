@@ -1,5 +1,6 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
+use chrono::{DateTime, Utc};
 
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
@@ -11,6 +12,8 @@ pub struct Model {
     pub email: String,
     pub password: String,
     pub enabled: bool,
+    pub create_time: DateTime<Utc>,
+    pub update_time: DateTime<Utc>,
 }
 
 
@@ -33,7 +36,7 @@ impl Related<super::role::Entity> for Entity {
     fn to() -> RelationDef {
         super::user_role::Relation::Role.def()
     }
-    
+
     fn via() -> Option<RelationDef> {
         Some(super::user_role::Relation::User.def().rev())
     }

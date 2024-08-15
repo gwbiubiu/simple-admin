@@ -6,6 +6,7 @@ use crate::errors::user::UserError::NotFound;
 use anyhow::Result;
 use crate::errors::AppError::UserError;
 use super::Page;
+use chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateUser {
@@ -23,6 +24,8 @@ pub struct User {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub password: Option<String>,
     pub enabled: bool,
+    pub create_time: DateTime<Utc>,
+    pub update_time: DateTime<Utc>,
 }
 
 #[derive(Debug, Default, Deserialize, Clone)]
@@ -73,6 +76,8 @@ impl User {
             email: u.email,
             password: None,
             enabled: u.enabled,
+            create_time: u.create_time,
+            update_time: u.update_time,
         }).collect(), total_users))
     }
 

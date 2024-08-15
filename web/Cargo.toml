@@ -12,5 +12,6 @@ yew = { version = "0.21.0", features = ["csr"] }
 serde = { workspace = true }
 anyhow = { workspace = true }
 serde_json = { workspace = true }
+chrono = { workspace = true }
 gloo = "0.11.0"
 yew-router = "0.18.0"

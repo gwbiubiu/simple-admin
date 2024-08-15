@@ -65,7 +65,7 @@ impl Component for Login {
                 console::log_2(&"Token:".into(), &msg.into());
                 false
             }
-            Msg::LoginFailed(msg) => {
+            Msg::Error(msg) => {
                 console::log_1(&"Login failed".into());
                 console::log_2(&"Message:".into(), &msg.into());
                 false

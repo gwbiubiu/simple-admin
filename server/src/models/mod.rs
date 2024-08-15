@@ -34,9 +34,9 @@ where
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Page {
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deserialize_number_from_string")]
     pub page: u64,
-    #[serde(default = "page_size")]
+    #[serde(default = "default_size", deserialize_with = "deserialize_number_from_string")]
     pub size: u64,
     #[serde(default)]
     pub total: u64,
@@ -56,6 +56,15 @@ impl Page {
     }
 }
 
-fn page_size() -> u64 {
+fn deserialize_number_from_string<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let s: String = Deserialize::deserialize(deserializer)?;
+    s.parse().map_err(serde::de::Error::custom)
+}
+
+
+fn default_size() -> u64 {
     10
 }

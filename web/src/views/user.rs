@@ -1,44 +1,31 @@
-use web_sys::console;
 use yew::prelude::*;
-use crate::apis::user::{get_user_list, Msg, QueryUserParams, UserListResp};
+use crate::apis::user::{get_user_list, QueryUserParams};
+use yew_hooks::prelude::*;
+use crate::components::error::{ErrorState, ErrorAction};
+use yewdux::prelude::*;
 
-pub struct User {
-    user_list: Option<UserListResp>,
-}
+#[function_component(User)]
+pub fn component() -> Html {
+    let (_, dispatch) = use_store::<ErrorState>();
 
+    let user_data = use_async(async move { get_user_list(QueryUserParams::new()).await });
+    {
+        let user_data = user_data.clone();
+        use_effect_with( (), move |_| {
+            user_data.run();
+        });
+    }
 
-impl Component for User {
-    type Message = Msg;
-    type Properties = ();
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        _ctx.link().send_future(get_user_list(QueryUserParams::new()));
-        Self {
-            user_list: None,
+    let mut users = vec![];
+    if let Some(data) = &user_data.data {
+        users = data.items.clone();
+    } else {
+        if let Some(err) = &user_data.error {
+            dispatch.apply(ErrorAction::SetError(err.to_string()));
         }
     }
 
-
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::UserList(resp) => {
-                self.user_list = Some(resp);
-                true
-            }
-            Msg::Error(msg) => {
-                console::log_2(&"get user list error".into(), &msg.into());
-                false
-            }
-        }
-    }
-
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        let users = match &self.user_list {
-            Some(resp) => &resp.items,
-            None => &vec![],
-        };
-        html! {
+    html! {
         <div>
             <h2>{"用户管理"}</h2>
             <table class="table table-striped">
@@ -67,6 +54,5 @@ impl Component for User {
                 </tbody>
             </table>
         </div>
-    }
     }
 }

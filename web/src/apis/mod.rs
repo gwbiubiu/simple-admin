@@ -21,7 +21,7 @@ pub struct Response<T> {
     pub data: Option<T>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Page {
     pub page: u64,
     pub size: u64,

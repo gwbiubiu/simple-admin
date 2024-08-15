@@ -14,6 +14,9 @@ pub enum ErrorAction {
     ClearError,
 }
 
+
+
+
 impl Reducer<ErrorState> for ErrorAction {
     fn apply(self, mut state: Rc<ErrorState>) -> Rc<ErrorState> {
         let mut state = Rc::make_mut(&mut state);

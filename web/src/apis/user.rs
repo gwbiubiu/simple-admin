@@ -2,7 +2,8 @@ use std::future::Future;
 use serde::{Deserialize};
 use super::{get, Page, Status};
 use chrono::{DateTime, Utc};
-#[derive(Deserialize)]
+
+#[derive(Deserialize, Clone)]
 pub struct User {
     pub id: u32,
     pub username: String,
@@ -16,7 +17,7 @@ pub enum Msg {
 }
 
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct UserListResp {
     pub page: Page,
     pub items: Vec<User>,
@@ -39,20 +40,18 @@ impl QueryUserParams {
     }
 }
 
-pub fn get_user_list(param: QueryUserParams) -> impl Future<Output=Msg> {
-    async move {
-        let mut url = format!("/api/v1/user/list?page={}&size={}", param.page, param.page_size);
-        if let Some(username) = param.username {
-            url.push_str(format!("&username={}", username).as_str());
-        }
-        match get::<UserListResp>(url.as_str()).await {
-            Ok(resp) => {
-                if resp.status == Status::SUCCESS {
-                    return Msg::UserList(resp.data.unwrap());
-                }
-                return Msg::Error(resp.message);
+pub async fn get_user_list(param: QueryUserParams) -> Result<UserListResp, String> {
+    let mut url = format!("/api/v1/user/list?page={}&size={}", param.page, param.page_size);
+    if let Some(username) = param.username {
+        url.push_str(format!("&username={}", username).as_str());
+    }
+    match get::<UserListResp>(url.as_str()).await {
+        Ok(resp) => {
+            if resp.status == Status::SUCCESS {
+                return Ok(resp.data.unwrap());
             }
-            Err(_) => Msg::Error("Server Internal error".to_string()),
+            return Err(resp.message);
         }
+        Err(_) => Err("Server Internal error".to_string()),
     }
 }

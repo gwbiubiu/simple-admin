@@ -15,4 +15,5 @@ serde_json = { workspace = true }
 chrono = { workspace = true }
 gloo = "0.11.0"
 yew-router = "0.18.0"
-yewdux = "0.10.0"
+yewdux = { version = "0.10.0", feature = "doctests", target_arch = "wasm32" }
+yew-hooks = "0.3.2"

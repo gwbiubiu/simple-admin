@@ -32,20 +32,7 @@ pub fn component() -> Html {
         let page = page.clone();
         Callback::from(move |new_page: u32| page.set(new_page - 1))
     };
-
-
-    let on_page_sub = {
-        let page = page.clone();
-        let current = *page;
-        Callback::from(move |_| page.set(current.saturating_sub(1)))
-    };
-
-    let on_page_add = {
-        let page = page.clone();
-        let current = *page;
-        Callback::from(move |_| page.set(current.saturating_add(1)))
-    };
-
+    
     let user_data = {
         let query_params = query_params.clone();
         use_async(async move { get_user_list((*query_params).clone()).await })

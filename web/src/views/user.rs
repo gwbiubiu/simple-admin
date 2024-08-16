@@ -3,18 +3,57 @@ use crate::apis::user::{get_user_list, QueryUserParams};
 use yew_hooks::prelude::*;
 use crate::components::error::{ErrorState, ErrorAction};
 use yewdux::prelude::*;
+use web_sys::console;
 
 #[function_component(User)]
 pub fn component() -> Html {
     let (_, dispatch) = use_store::<ErrorState>();
+    let mut page = use_state(|| 0);
+    let page_size = use_state(|| 10);
+    let username = use_state(|| None);
 
-    let user_data = use_async(async move { get_user_list(QueryUserParams::new()).await });
+    let query_params = use_memo(
+        (*page.clone(), *page_size.clone(), username.clone()),
+        |(page, page_size, username)| {
+            QueryUserParams {
+                page: *page,
+                page_size: *page_size,
+                username: (**username).clone(),
+            }
+        },
+    );
+
+
+    let on_page_change = {
+        let page = page.clone();
+        Callback::from(move |new_page: u32| page.set(new_page - 1))
+    };
+
+
+    let on_page_sub = {
+        let page = page.clone();
+        let current = *page;
+        Callback::from(move |_| page.set(current.saturating_sub(1)))
+    };
+
+    let on_page_add = {
+        let page = page.clone();
+        let current = *page;
+        Callback::from(move |_| page.set(current.saturating_add(1)))
+    };
+
+    let user_data = {
+        let query_params = query_params.clone();
+        use_async(async move { get_user_list((*query_params).clone()).await })
+    };
+
     {
         let user_data = user_data.clone();
-        use_effect_with( (), move |_| {
+        use_effect_with(query_params.clone(), move |_| {
             user_data.run();
         });
     }
+
 
     let mut users = vec![];
     if let Some(data) = &user_data.data {
@@ -53,6 +92,27 @@ pub fn component() -> Html {
                     }).collect::<Html>()}
                 </tbody>
             </table>
+            <nav aria-label="Page navigation example">
+                  <ul class="pagination">
+                    <li class={classes!("page-item", (*page==0).then(|| "disabled"))}>
+                        <a class="page-link" href="#" onclick={on_page_sub}>
+                            {"\u{00AB}"}
+                        </a>
+                    </li>
+                    {(1..=3).map(|p| html! {
+                        <li class={classes!("page-item", (p-1 == *page).then(|| "active"))}>
+                            <a class="page-link" href="#" onclick={on_page_change.reform(move |_| p)}>
+                                {p}
+                            </a>
+                        </li>
+                    }).collect::<Html>()}
+                    <li class={classes!("page-item", (*page == 3).then(|| "disabled"))}>
+                        <a class="page-link" href="#" onclick={on_page_add}>
+                            {"\u{00BB}"}
+                        </a>
+                    </li>
+                  </ul>
+                </nav>
         </div>
     }
 }

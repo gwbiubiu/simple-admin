@@ -19,7 +19,7 @@ pub enum ErrorAction {
 
 impl Reducer<ErrorState> for ErrorAction {
     fn apply(self, mut state: Rc<ErrorState>) -> Rc<ErrorState> {
-        let mut state = Rc::make_mut(&mut state);
+        let state = Rc::make_mut(&mut state);
         match self {
             ErrorAction::SetError(message) => {
                 state.message = Some(message);

@@ -1,4 +1,3 @@
-use std::future::Future;
 use serde::{Deserialize};
 use super::{get, Page, Status};
 use chrono::{DateTime, Utc};
@@ -24,6 +23,7 @@ pub struct UserListResp {
 }
 
 
+#[derive(Clone, Deserialize, Eq, PartialEq)]
 pub struct QueryUserParams {
     pub page: u32,
     pub page_size: u32,

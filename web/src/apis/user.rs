@@ -1,8 +1,8 @@
-use serde::{Deserialize};
+use serde::{Deserialize, Serialize};
 use super::{get, Page, Status};
 use chrono::{DateTime, Utc};
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub struct User {
     pub id: u32,
     pub username: String,
@@ -16,7 +16,7 @@ pub enum Msg {
 }
 
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct UserListResp {
     pub page: Page,
     pub items: Vec<User>,

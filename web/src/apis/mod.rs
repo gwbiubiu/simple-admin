@@ -21,11 +21,11 @@ pub struct Response<T> {
     pub data: Option<T>,
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Eq, PartialEq)]
 pub struct Page {
-    pub page: u64,
-    pub size: u64,
-    pub total: u64,
+    pub page: u32,
+    pub size: u32,
+    pub total: u32,
 }
 
 

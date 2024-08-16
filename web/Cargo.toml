@@ -7,7 +7,7 @@ authors = ["Wei.Ge <gwbiubiu@gmail.com>"]
 [dependencies]
 gloo-net = "0.6.0"
 wasm-bindgen-futures = "0.4.43"
-web-sys = "0.3.70"
+web-sys = { version = "0.3.70", features = ["HtmlSelectElement"] }
 yew = { version = "0.21.0", features = ["csr"] }
 serde = { workspace = true }
 anyhow = { workspace = true }

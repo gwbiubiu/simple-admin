@@ -1,23 +1,20 @@
 use yew::prelude::*;
 use crate::apis::user::{get_user_list, QueryUserParams};
 use yew_hooks::prelude::*;
-use crate::components::error::{ErrorState, ErrorAction};
+use crate::components::error::{ErrorState};
 use yewdux::prelude::*;
-use web_sys::{HtmlSelectElement, Event, console};
-use crate::components::pagination::Pagination;
+use web_sys::{console};
+use crate::components::pagination::{Pagination, PaginationState};
 
 #[function_component(User)]
 pub fn component() -> Html {
-    let (_, dispatch) = use_store::<ErrorState>();
-    let page = use_state(|| 0);
+    let (state, dispatch) = use_store::<PaginationState>();
     let total_pages = use_state(|| 0);
-    let page_size = use_state(|| 10);
     let username = use_state(|| None);
     let users = use_state(|| Vec::new());
 
-
     let query_params = use_memo(
-        (*page.clone(), *page_size.clone(), username.clone()),
+        (state.current_page, state.page_size, username.clone()),
         |(page, page_size, username)| {
             QueryUserParams {
                 page: *page,
@@ -27,12 +24,6 @@ pub fn component() -> Html {
         },
     );
 
-
-    let on_page_change = {
-        let page = page.clone();
-        Callback::from(move |new_page: u32| page.set(new_page - 1))
-    };
-    
     let user_data = {
         let query_params = query_params.clone();
         use_async(async move { get_user_list((*query_params).clone()).await })
@@ -47,12 +38,11 @@ pub fn component() -> Html {
 
 
     {
-        let page_size = page_size.clone();
         let users = users.clone();
         let total_pages = total_pages.clone();
         use_effect_with(user_data.clone(), move |user_data| {
             if let Some(data) = &user_data.data {
-                let new_total_pages = (data.page.total as f64 / *page_size as f64).ceil() as u32;
+                let new_total_pages = (data.page.total as f64 / state.page_size as f64).ceil() as u32;
                 users.set(data.items.clone());
                 total_pages.set(new_total_pages);
                 let json_string = serde_json::to_string_pretty(data).unwrap_or_else(|_| "Failed to serialize data".to_string());
@@ -60,19 +50,6 @@ pub fn component() -> Html {
             }
         });
     }
-
-
-    let on_page_size_change = {
-        let page_size = page_size.clone();
-        let page = page.clone();
-        Callback::from(move |e: Event| {
-            let target: HtmlSelectElement = e.target_unchecked_into();
-            let value = target.value().parse::<u32>().unwrap_or(10);
-            page_size.set(value);
-            page.set(0);
-        })
-    };
-
 
     html! {
         <div>
@@ -103,13 +80,8 @@ pub fn component() -> Html {
                 </tbody>
             </table>
             <Pagination
-                current_page={*page}
                 total_pages={*total_pages}
-                page_size={*page_size}
-                on_page_change={on_page_change}
-                on_page_size_change={on_page_size_change}
             />
-
         </div>
     }
 }

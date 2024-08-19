@@ -1,11 +1,12 @@
+use web_sys::console;
 use yew::prelude::*;
+use yew_hooks::use_async;
+use yewdux::use_store;
 use crate::apis::user::{get_user_list, QueryUserParams};
-use yew_hooks::prelude::*;
-use yewdux::prelude::*;
-use web_sys::{console};
-use crate::components::pagination::{Pagination, PaginationState, PaginationAction};
+use crate::components::pagination::{PaginationState, Pagination, PaginationAction};
 
-#[function_component(User)]
+
+#[function_component(Api)]
 pub fn component() -> Html {
     let (state, dispatch) = use_store::<PaginationState>();
     dispatch.apply(PaginationAction::ResetPage);

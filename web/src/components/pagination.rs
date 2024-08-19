@@ -1,3 +1,4 @@
+use std::rc::Rc;
 use yew::prelude::*;
 use yewdux::prelude::*;
 use web_sys::HtmlSelectElement;
@@ -8,12 +9,31 @@ pub struct PaginationState {
     pub page_size: u32,
 }
 
+pub enum PaginationAction {
+    ResetPage,
+
+}
+
 impl Default for PaginationState {
     fn default() -> Self {
         Self {
             current_page: 0,
             page_size: 10,
         }
+    }
+}
+
+
+impl Reducer<PaginationState> for PaginationAction {
+    fn apply(self, mut state: Rc<PaginationState>) -> Rc<PaginationState> {
+        let state = Rc::make_mut(&mut state);
+        match self {
+            PaginationAction::ResetPage => {
+                state.current_page = 0;
+                state.page_size = 10;
+            }
+        };
+        Rc::new(state.clone())
     }
 }
 
@@ -62,7 +82,7 @@ pub fn pagination(props: &PaginationProps) -> Html {
             });
         })
     };
-    
+
     html! {
         <div class="d-flex justify-content-end align-items-center mt-3">
             <nav aria-label="Page navigation example" class="me-3">

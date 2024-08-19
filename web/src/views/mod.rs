@@ -6,6 +6,7 @@ pub mod not_found;
 pub mod user;
 mod role;
 mod dashboard;
+mod api;
 
 use login::Login;
 use not_found::NotFound;

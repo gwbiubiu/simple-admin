@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use super::{role::RoleList, user::User};
+use super::{role::Role, user::User, api::Api};
 
 pub struct Dashboard {
     active_route: DashboardRoute,
@@ -14,6 +14,8 @@ pub enum DashboardRoute {
     Users,
     #[at("/dashboard/roles")]
     Roles,
+    #[at("/dashboard/apis")]
+    Apis,
 }
 
 pub enum Msg {
@@ -49,6 +51,7 @@ impl Component for Dashboard {
                                 { self.render_nav_item(ctx, DashboardRoute::Home, "仪表盘") }
                                 { self.render_nav_item(ctx, DashboardRoute::Users, "用户管理") }
                                 { self.render_nav_item(ctx, DashboardRoute::Roles, "角色管理") }
+                                { self.render_nav_item(ctx, DashboardRoute::Apis, "接口管理") }
                             </ul>
                         </div>
                     </nav>
@@ -90,7 +93,8 @@ impl Dashboard {
         match routes {
             DashboardRoute::Home => html! { <h1>{ "欢迎来到仪表盘" }</h1> },
             DashboardRoute::Users => html! { <User /> },
-            DashboardRoute::Roles => html! { <RoleList /> },
+            DashboardRoute::Roles => html! { <Role /> },
+            DashboardRoute::Apis => html! { <Api /> },
         }
     }
 }

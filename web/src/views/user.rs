@@ -8,7 +8,13 @@ use crate::components::pagination::{Pagination, PaginationState, PaginationActio
 #[function_component(User)]
 pub fn component() -> Html {
     let (state, dispatch) = use_store::<PaginationState>();
-    dispatch.apply(PaginationAction::ResetPage);
+    {
+        let dispatch = dispatch.clone();
+        use_effect_once(move || {
+            dispatch.apply(PaginationAction::ResetPage);
+            || {}
+        });
+    }
     let total_pages = use_state(|| 0);
     let username = use_state(|| None);
     let users = use_state(|| Vec::new());

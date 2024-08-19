@@ -1,5 +1,6 @@
 use sea_orm::*;
 use anyhow::Result;
+use chrono::{DateTime, Utc};
 use sea_orm::ActiveValue::Set;
 use serde::{Deserialize, Serialize};
 use crate::entities::{role, role_apis, user_role};
@@ -12,6 +13,8 @@ use crate::models::Page;
 pub struct Role {
     pub id: i32,
     pub name: String,
+    pub create_time: DateTime<Utc>,
+    pub update_time: DateTime<Utc>,
 }
 
 impl From<role::Model> for Role {
@@ -19,6 +22,8 @@ impl From<role::Model> for Role {
         Self {
             id: role.id,
             name: role.name,
+            create_time: role.create_time,
+            update_time: role.update_time,
         }
     }
 }
@@ -119,6 +124,8 @@ impl Role {
         let roles = roles.into_iter().map(|role| Self {
             id: role.id,
             name: role.name,
+            create_time: role.create_time,
+            update_time: role.update_time,
         }).collect();
         Ok((roles, count))
     }

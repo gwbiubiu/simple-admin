@@ -1,6 +1,7 @@
 use actix_web::{delete, Error, get, HttpResponse, post, put, web};
 use anyhow::Result;
 use crate::{AppState, models, services, success_json};
+use crate::models::{Page, PageResponse};
 
 pub fn api_router(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -17,9 +18,10 @@ pub fn api_router(cfg: &mut web::ServiceConfig) {
 #[get("/list")]
 async fn api_list(data: web::Data<AppState>, query: web::Query<models::QueryApiList>) -> Result<HttpResponse, Error> {
     let db = &data.conn;
-    let query = query.into_inner();
-    let (apis, _) = services::Api::list(db, query.clone()).await?;
-    Ok(success_json(apis))
+    let query_inner = query.into_inner();
+    let (apis, total) = services::Api::list(db, query_inner.clone()).await?;
+    let page = Page::new(query_inner.page.page, query_inner.page.size, total);
+    Ok(success_json(PageResponse::new(page, apis)))
 }
 
 #[post("")]

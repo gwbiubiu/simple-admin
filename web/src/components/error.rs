@@ -3,18 +3,15 @@ use yew::prelude::*;
 use gloo::timers::callback::Timeout;
 use yewdux::prelude::*;
 
-
 #[derive(Default, Clone, PartialEq, Eq, Store)]
 pub struct ErrorState {
     message: Option<String>,
 }
 
 pub enum ErrorAction {
-    SetError(String),
+    SetError(Option<String>),
     ClearError,
 }
-
-
 
 
 impl Reducer<ErrorState> for ErrorAction {
@@ -22,7 +19,9 @@ impl Reducer<ErrorState> for ErrorAction {
         let state = Rc::make_mut(&mut state);
         match self {
             ErrorAction::SetError(message) => {
-                state.message = Some(message);
+                if let Some(message) = message {
+                    state.message = Some(message);
+                }
             }
             ErrorAction::ClearError => {
                 state.message = None;
@@ -43,16 +42,16 @@ pub fn error_component() -> Html {
         use_effect(
             move || {
                 if state.message.is_some() {
-                    let timeout = Timeout::new(5000, move || {
+                    let timeout = Timeout::new(3000, move || {
                         dispatch.apply(ErrorAction::ClearError);
                     });
                     timeout.forget();
                 }
                 || {}
             },
-        );  
+        );
     }
-    
+
 
     let close = {
         let dispatch = dispatch.clone();

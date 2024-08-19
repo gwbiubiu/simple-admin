@@ -7,6 +7,8 @@ use crate::entities;
 use crate::errors::{AppError, AppError::ApiError};
 use crate::errors::api::ApiError::{NotFound, ApiAlreadyExists};
 use crate::models::Page;
+use chrono::{DateTime, Utc};
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateApi {
@@ -53,6 +55,9 @@ pub struct Api {
     pub path: String,
     pub api_group: String,
     pub method: String,
+    pub create_time: DateTime<Utc>,
+    pub update_time: DateTime<Utc>,
+
 }
 
 impl From<api::Model> for Api {
@@ -63,6 +68,8 @@ impl From<api::Model> for Api {
             path: api.path,
             api_group: api.api_group,
             method: api.method,
+            create_time: api.create_time,
+            update_time: api.update_time,
         }
     }
 }
@@ -91,13 +98,7 @@ impl Api {
     pub async fn get_api_by_id(db: &DbConn, id: i32) -> Result<Self, AppError> {
         let api = api::Entity::find_by_id(id).one(db).await?;
         match api {
-            Some(api) => Ok(Self {
-                id: api.id,
-                name: api.name,
-                path: api.path,
-                api_group: api.api_group,
-                method: api.method,
-            }),
+            Some(api) => Ok(api.into()),
             None => return Err(ApiError(NotFound)),
         }
     }
@@ -139,7 +140,28 @@ impl Api {
     }
 
 
-    pub async fn get_api_list(db: &DbConn, query: QueryApiList) -> Result<(Vec<ApiCategory>, u64), AppError> {
+    pub async fn get_api_list(db: &DbConn, query: QueryApiList) -> Result<(Vec<Self>, u64), AppError> {
+        let mut query_builder = api::Entity::find();
+        if let Some(name) = query.name {
+            query_builder = query_builder.filter(api::Column::Name.contains(name));
+        }
+        if let Some(api_group) = query.api_group {
+            query_builder = query_builder.filter(api::Column::ApiGroup.contains(api_group));
+        }
+        let total = query_builder.clone().count(db).await?;
+        let api_list = query_builder
+            .limit(query.page.size)
+            .offset(query.page.page * query.page.size)
+            .all(db)
+            .await?.into_iter().map(|a| {
+            a.into()
+        }).collect::<Vec<Self>>();
+
+        Ok((api_list, total))
+    }
+
+
+    pub async fn get_api_list_with_group(db: &DbConn, query: QueryApiList) -> Result<(Vec<ApiCategory>, u64), AppError> {
         let mut query_builder = api::Entity::find();
         if let Some(name) = query.name {
             query_builder = query_builder.filter(api::Column::Name.contains(name));

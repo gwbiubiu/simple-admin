@@ -10,11 +10,6 @@ pub struct User {
     pub create_time: DateTime<Utc>,
 }
 
-pub enum Msg {
-    UserList(UserListResp),
-    Error(String),
-}
-
 
 #[derive(Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct UserListResp {

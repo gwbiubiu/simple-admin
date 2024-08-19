@@ -134,6 +134,8 @@ impl User {
             roles: roles.iter().map(|r| super::role::Role {
                 id: r.id,
                 name: r.name.to_owned(),
+                create_time: r.create_time,
+                update_time: r.update_time,
             }).collect(),
         };
         Ok(user_info)

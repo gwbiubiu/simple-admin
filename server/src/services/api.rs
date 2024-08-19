@@ -28,7 +28,7 @@ impl Api {
         Ok(ret)
     }
 
-    pub async fn list(db: &DbConn, query: models::QueryApiList) -> Result<(Vec<ApiCategory>, u64), AppError> {
+    pub async fn list(db: &DbConn, query: models::QueryApiList) -> Result<(Vec<models::Api>, u64), AppError> {
         let resp = api::Api::get_api_list(db, query).await?;
         Ok(resp)
     }

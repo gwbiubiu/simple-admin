@@ -1,6 +1,7 @@
+use chrono::{DateTime, Utc};
 use sea_orm::entity::prelude::*;
-use sea_orm::{ActiveModelBehavior, DeriveEntityModel, EnumIter};
 use serde::{Deserialize, Serialize};
+
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
 #[sea_orm(table_name = "roles")]
@@ -8,6 +9,8 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub name: String,
+    pub create_time: DateTime<Utc>,
+    pub update_time: DateTime<Utc>,
 }
 
 
@@ -18,7 +21,7 @@ pub enum Relation {}
 impl ActiveModelBehavior for ActiveModel {}
 
 
-impl Related<super::user::Entity> for Entity{
+impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
         super::user_role::Relation::User.def()
     }

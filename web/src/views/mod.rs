@@ -12,6 +12,8 @@ use login::Login;
 use not_found::NotFound;
 use dashboard::Dashboard;
 
+use crate::components::error::ErrorComponent;
+
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -42,6 +44,7 @@ fn switch(routes: Route) -> Html {
 pub fn app() -> Html {
     html! {
         <BrowserRouter>
+            <ErrorComponent />
             <Switch<Route> render={switch} />
         </BrowserRouter>
     }

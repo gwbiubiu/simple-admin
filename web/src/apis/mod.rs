@@ -1,10 +1,12 @@
 use gloo_net::http::Request;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-
+use anyhow::Result;
 
 pub mod login;
 pub mod user;
+pub mod role;
+pub mod api;
 
 #[derive(Deserialize, PartialEq)]
 pub enum Status {
@@ -35,7 +37,7 @@ pub fn with_path(path: &str) -> String {
     format!("{}{}", BASE_URL, path)
 }
 
-pub async fn post<T, U>(path: &str, data: T) -> anyhow::Result<Response<U>>
+pub async fn post<T, U>(path: &str, data: T) -> Result<Response<U>, String>
 where
     T: Serialize,
     U: DeserializeOwned,
@@ -43,20 +45,24 @@ where
     let url = with_path(path);
     let resp = Request::post(url.as_str())
         .header("Content-Type", "application/json")
-        .json(&data)?
-        .send().await?;
-    let resp = resp.json().await?;
+        .json(&data).map_err(|e| e.to_string())?
+        .send().await.map_err(|e| e.to_string())?;
+    let resp = resp.json().await.map_err(|e| e.to_string())?;
     Ok(resp)
 }
 
 
-pub async fn get<T>(path: &str) -> anyhow::Result<Response<T>>
+pub async fn get<T>(path: &str) -> Result<Response<T>, String>
 where
     T: DeserializeOwned,
 {
     let url = with_path(path);
     let resp = Request::get(url.as_str())
-        .send().await?;
-    let resp = resp.json().await?;
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    let resp = resp.json()
+        .await
+        .map_err(|e| e.to_string())?;
     Ok(resp)
 }

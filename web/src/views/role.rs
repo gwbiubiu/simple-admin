@@ -1,6 +1,5 @@
-use web_sys::console;
 use yew::prelude::*;
-use yew_hooks::use_async;
+use yew_hooks::*;
 use yewdux::use_store;
 use crate::apis::role::{get_role_list, QueryRoleParams};
 use crate::components::pagination::{PaginationState, Pagination, PaginationAction};
@@ -9,7 +8,13 @@ use crate::components::pagination::{PaginationState, Pagination, PaginationActio
 #[function_component(Role)]
 pub fn component() -> Html {
     let (state, dispatch) = use_store::<PaginationState>();
-    dispatch.apply(PaginationAction::ResetPage);
+    {
+        let dispatch = dispatch.clone();
+        use_effect_once(move || {
+            dispatch.apply(PaginationAction::ResetPage);
+            || {}
+        });
+    }
     let total_pages = use_state(|| 0);
     let name = use_state(|| None);
     let roles = use_state(|| Vec::new());
@@ -57,7 +62,7 @@ pub fn component() -> Html {
                 <thead>
                     <tr>
                         <th>{"ID"}</th>
-                        <th>{"用户名"}</th>
+                        <th>{"角色名称"}</th>
                         <th>{"创建时间"}</th>
                         <th>{"操作"}</th>
                     </tr>

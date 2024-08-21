@@ -1,7 +1,7 @@
 use actix_web::{delete, Error, get, HttpResponse, post, put, web};
 use anyhow::Result;
 use crate::{AppState, services, success_json};
-use crate::models::role;
+use crate::models::{Page, PageResponse, role};
 
 pub fn role_router(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -18,9 +18,10 @@ pub fn role_router(cfg: &mut web::ServiceConfig) {
 
 #[get("/list")]
 async fn role_list(data: web::Data<AppState>, query: web::Query<role::QueryRole>) -> Result<HttpResponse, Error> {
-    let query = query.into_inner();
-    let roles = services::role::Role::list_role(&data.conn, query.clone()).await?;
-    Ok(success_json((roles.0, query.page.new_with_total(roles.1))))
+    let query_inner = query.into_inner();
+    let (roles,total) = services::role::Role::list_role(&data.conn, query_inner.clone()).await?;
+    let page = Page::new(query_inner.page.page, query_inner.page.size, total);
+    Ok(success_json(PageResponse::new(page, roles)))
 }
 
 #[post("")]

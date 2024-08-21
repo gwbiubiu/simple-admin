@@ -1,12 +1,11 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-
-pub mod login;
 pub mod not_found;
 pub mod user;
 mod role;
 mod dashboard;
 mod api;
+mod login;
 
 use login::Login;
 use not_found::NotFound;

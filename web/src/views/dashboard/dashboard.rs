@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use super::{role::Role, user::User, api::Api};
+use crate::views::{user::User, role::Role, api::Api};
 
 pub struct Dashboard {
     active_route: DashboardRoute,

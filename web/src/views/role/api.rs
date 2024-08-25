@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::apis::role::{get_role_apis_group, role_api_update};
+use crate::apis::role::{get_role_apis_group, role_api_update, RoleApi};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_hooks::*;
@@ -50,6 +50,16 @@ pub fn component(api_prop: &ApiProps) -> Html {
             update_role_api.run();
         })
     };
+    let is_group_checked = {
+        let selected_apis = selected_apis.clone();
+        move |group_items: &Vec<_>| {
+            group_items
+                .iter()
+                .all(|api: &RoleApi| selected_apis.contains(&api.id))
+        }
+    };
+
+
     {
         let role_api_group = role_api_group.clone();
         let selected_apis = selected_apis.clone();
@@ -73,7 +83,26 @@ pub fn component(api_prop: &ApiProps) -> Html {
 
                 <div class="card-body">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="groupCheck" checked=true />
+                        <input class="form-check-input" type="checkbox" id="groupCheck"
+                        checked={is_group_checked(&data.items)}
+                        onclick={
+                            let selected_apis = selected_apis.clone();
+                            let items = data.items.clone();
+                            let is_group_checked = is_group_checked.clone();
+                            Callback::from(move |_: MouseEvent| {
+                                let mut new_selected_apis = (*selected_apis).clone();
+                                if is_group_checked(&items) {
+                                    for api in &items {
+                                        new_selected_apis.remove(&api.id);
+                                    }
+                                } else {
+                                    for api in &items {
+                                        new_selected_apis.insert(api.id);
+                                    }
+                                }
+                                selected_apis.set(new_selected_apis);
+                            })
+                        } />
                         <label class="form-check-label" for="groupCheck">
                             { &data.api_group }
                         </label>

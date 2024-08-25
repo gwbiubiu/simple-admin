@@ -36,20 +36,20 @@ pub fn component() -> Html {
     };
 
     {
-        let user_data = user_data.clone();
+        let user_data: UseAsyncHandle<crate::apis::role::RoleListResp, String> = user_data.clone();
         use_effect_with(query_params.clone(), move |_| {
             user_data.run();
         });
     }
     {
-        let users = roles.clone();
+        let roles = roles.clone();
         let total_pages = total_pages.clone();
         use_effect_with(user_data.clone(), move |user_data| {
             if let Some(data) = &user_data.data {
                 let new_total_pages = (data.page.total as f64 / state.page_size as f64).ceil() as u32;
-                users.set(data.items.clone());
+                roles.set(data.items.clone());
                 total_pages.set(new_total_pages);
-                let json_string = serde_json::to_string_pretty(data).unwrap_or_else(|_| "Failed to serialize data".to_string());
+                //let json_string = serde_json::to_string_pretty(data).unwrap_or_else(|_| "Failed to serialize data".to_string());
                 //console::log_1(&json_string.into());
             }
         });

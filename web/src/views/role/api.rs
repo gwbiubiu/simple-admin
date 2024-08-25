@@ -1,4 +1,10 @@
+use web_sys::console;
 use yew::prelude::*;
+use yew_hooks::*;
+use yewdux::use_store;
+use crate::apis::role::{get_role_apis_group, RoleApiCategory};
+use crate::components::error::{ErrorAction, ErrorState};
+
 
 #[derive(Properties, PartialEq)]
 struct CheckboxProps {
@@ -39,63 +45,39 @@ fn checkbox(CheckboxProps { label, path, checked, on_toggle }: &CheckboxProps) -
 
 #[function_component(Api)]
 pub fn app() -> Html {
-    let checkboxes = use_state(|| vec![
-        ("获取公告列表", "/info/getInfoList", true),
-        ("根据ID获取公告", "/info/findInfo", true),
-        ("更新公告", "/info/updateInfo", true),
-        ("批量删除公告", "/info/deleteInfoByIds", true),
-        ("删除公告", "/info/deleteInfo", true),
-        ("新建公告", "/info/createInfo", true),
-    ]);
+    let (_, dispatch_err) = use_store::<ErrorState>();
+    let role_api_group = use_state(|| vec![]);
+    let role_id = use_state(|| 1);
+    let role_api_data: UseAsyncHandle<Vec<RoleApiCategory>, String> = {
+        let role_id = role_id.clone();
+        use_async(async move { get_role_apis_group(*role_id).await })
+    };    
+    {
+        let role_api_data = role_api_data.clone();   
+        use_effect_with(role_id, move |_| {
+            role_api_data.run();
+        });
+    }
+    {
+        let role_api_group = role_api_group.clone();
+        use_effect_with(role_api_data, move |role_api_data| {
+            if let Some(data) = &role_api_data.data {
+                role_api_group.set(data.clone());
+            }
+        });
+    
+    }
 
-    let toggle_checkbox = {
-        let checkboxes = checkboxes.clone();
-        Callback::from(move |index: usize| {
-            checkboxes.set(
-                checkboxes
-                    .iter()
-                    .enumerate()
-                    .map(|(i, item)| {
-                        if i == index {
-                            (item.0, item.1, !item.2)
-                        } else {
-                            *item
-                        }
-                    })
-                    .collect::<Vec<_>>(),
-            );
-        })
-    };
-
+   
     html! {
         <div class="container mt-5">
-            <div class="card">
-                <div class="card-header">
-                    { "公告组" }
+            <p1>{"API组"}</p1>
+            {(*role_api_group).iter().map(|api_group| html!{
+                <div>
+                <p1>{&api_group.api_group}</p1>
                 </div>
-                <div class="card-body">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="groupCheck" checked=true />
-                        <label class="form-check-label" for="groupCheck">
-                            { "公告组" }
-                        </label>
-                    </div>
-                    <div class="ms-4">
-                        {
-                            for checkboxes.iter().enumerate().map(|(index, (label, path, checked))| {
-                                html! {
-                                    <Checkbox
-                                        label={label}
-                                        path={path}
-                                        checked={*checked}
-                                        on_toggle={toggle_checkbox.reform(move |_| index)}
-                                    />
-                                }
-                            })
-                        }
-                    </div>
-                </div>
-            </div>
+            }).collect::<Html>()
+        }
         </div>
     }
 }

@@ -24,6 +24,19 @@ pub struct QueryRoleParams {
     pub name: Option<String>,
 }
 
+#[derive(Clone, Deserialize, Serialize, PartialEq, Eq)]
+pub struct RoleApiCategory {
+    pub api_group: String,
+    pub items: Vec<RoleApi>,
+}
+
+#[derive(Clone, Deserialize, Serialize, PartialEq, Eq)]
+pub struct RoleApi {
+    pub id: u32,
+    pub name: String,
+    pub has: bool,
+}
+
 impl QueryRoleParams {
     pub fn new() -> Self {
         Self {
@@ -39,6 +52,15 @@ pub async fn get_role_list(param: QueryRoleParams) -> Result<RoleListResp, Strin
         url.push_str(format!("&name={}", name).as_str());
     }
     let resp = get::<RoleListResp>(url.as_str()).await?;
+    if resp.status == Status::SUCCESS {
+        return Ok(resp.data.unwrap());
+    }
+    return Err(resp.message);
+}
+
+pub async fn get_role_apis_group(role_id: u32) -> Result<Vec<RoleApiCategory>, String> {
+    let url = format!("/api/v1/role/{}/api_router_group", role_id);
+    let resp = get::<Vec<RoleApiCategory>>(url.as_str()).await?;
     if resp.status == Status::SUCCESS {
         return Ok(resp.data.unwrap());
     }

@@ -69,10 +69,6 @@ impl Component for Login {
                 console::log_2(&"Message:".into(), &msg.into());
                 false
             }
-            Msg::HideError => {
-                self.show_error = false;
-                true
-            }
         }
     }
 

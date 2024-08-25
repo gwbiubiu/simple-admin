@@ -10,7 +10,6 @@ pub enum Msg {
     Submit,
     LoginSuccess(String),
     Error(String),
-    HideError,
 }
 
 #[derive(Serialize)]

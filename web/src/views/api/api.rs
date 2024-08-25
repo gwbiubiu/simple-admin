@@ -52,7 +52,6 @@ pub fn component() -> Html {
                 let new_total_pages = (data.page.total as f64 / state.page_size as f64).ceil() as u32;
                 apis.set(data.items.clone());
                 total_pages.set(new_total_pages);
-                let json_string = serde_json::to_string_pretty(data).unwrap_or_else(|_| "Failed to serialize data".to_string());
             } else {
                 let err_msg = api_data.error.as_ref().map(|e| e.clone());
                 dispatch_err.apply(ErrorAction::SetError(err_msg));

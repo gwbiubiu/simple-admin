@@ -26,20 +26,6 @@ pub struct UpdateApi {
     pub method: Option<String>,
 }
 
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ApiList {
-    pub items: Vec<ApiCategory>,
-    pub page: Page,
-}
-
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ApiCategory {
-    pub api_group: String,
-    pub items: Vec<Api>,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QueryApiList {
     pub name: Option<String>,
@@ -159,40 +145,9 @@ impl Api {
 
         Ok((api_list, total))
     }
-
-
-    pub async fn get_api_list_with_group(db: &DbConn, query: QueryApiList) -> Result<(Vec<ApiCategory>, u64), AppError> {
-        let mut query_builder = api::Entity::find();
-        if let Some(name) = query.name {
-            query_builder = query_builder.filter(api::Column::Name.contains(name));
-        }
-        if let Some(api_group) = query.api_group {
-            query_builder = query_builder.filter(api::Column::ApiGroup.contains(api_group));
-        }
-        let total = query_builder.clone().count(db).await?;
-        let api_list = query_builder
-            // .limit(query.page.size)
-            // .offset(query.page.page * query.page.size)
-            .all(db)
-            .await?;
-        let mut api_category = ApiCategory {
-            api_group: "".to_string(),
-            items: vec![],
-        };
-        let mut api_list_category = vec![];
-        let mut api_list_map: HashMap<String, Vec<Api>> = HashMap::new();
-        for api in api_list {
-            if api_list_map.contains_key(&api.api_group) {
-                api_list_map.get_mut(&api.api_group).unwrap().push(api.into());
-            } else {
-                api_list_map.insert(api.api_group.clone(), vec![api.into()]);
-            }
-        }
-        for (k, v) in api_list_map {
-            api_category.api_group = k;
-            api_category.items = v;
-            api_list_category.push(api_category.clone());
-        }
-        Ok((api_list_category, total))
+    
+    pub async fn get_all_apis(db: &DbConn) -> Result<Vec<Api>, AppError> {
+        let apis = api::Entity::find().all(db).await?;
+        Ok(apis.into_iter().map(|a| a.into()).collect())
     }
 }

@@ -3,7 +3,7 @@ use yew_hooks::*;
 use yewdux::use_store;
 use crate::apis::role::{get_role_list, QueryRoleParams};
 use crate::components::pagination::{PaginationState, Pagination, PaginationAction};
-
+use super::api::Api;
 
 #[function_component(Role)]
 pub fn component() -> Html {
@@ -84,6 +84,7 @@ pub fn component() -> Html {
             <Pagination
                 total_pages={*total_pages}
             />
+        <Api/>
         </div>
     }
 }

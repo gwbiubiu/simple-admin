@@ -1,8 +1,9 @@
+use std::collections::{HashMap, HashSet};
 use log::error;
 use sea_orm::*;
 use crate::errors::AppError;
 use crate::models::role::{self, AddRoleApi};
-
+use crate::models::api;
 
 pub struct Role;
 
@@ -48,7 +49,39 @@ impl Role {
             Err(e) => {
                 error!("Unexpected error during transaction: {:?}", e);
                 Err(AppError::SystemError(e.to_string()))
-            },
+            }
         }
+    }
+
+    pub async fn get_role_apis_group(db: &DbConn, role_id: i32) -> Result<Vec<role::RoleApiCategory>, AppError> {
+        let role_apis = role::Role::get_role_apis(db, role_id).await?;
+        let apis = api::Api::get_all_apis(db).await?;
+        let mut role_apis_group = vec![];
+        let api_set: HashSet<i32> = role_apis.into_iter().collect();
+        let mut role_apis_map : HashMap<String, Vec<role::RoleHasApi>> = HashMap::new();
+        //遍历role_api，按照名称放到map中
+        for api in apis {
+            let role_api = role::RoleHasApi {
+                id: api.id,
+                name: api.name,
+                path: api.path,
+                method: api.method,
+                has: api_set.contains(&api.id),
+            };
+            if role_apis_map.contains_key(&api.api_group) {
+                role_apis_map.get_mut(&api.api_group).unwrap().push(role_api);
+            } else {
+                role_apis_map.insert(api.api_group, vec![role_api]);
+            }
+        }
+        for (k, v) in role_apis_map {
+            role_apis_group.push(role::RoleApiCategory {
+                api_group: k,
+                items: v,
+            });
+        }
+        role_apis_group.sort_by(|a, b: &role::RoleApiCategory| a.api_group.cmp(&b.api_group));
+
+        Ok(role_apis_group)
     }
 }

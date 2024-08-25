@@ -1,7 +1,6 @@
 use sea_orm::DbConn;
 use crate::errors::AppError;
 use crate::{models, models::api};
-use crate::models::ApiCategory;
 
 pub struct Api;
 

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::entities::{role, role_apis, user_role};
 use crate::errors::{AppError, AppError::RoleError, roles::RoleError::RoleNotFound, roles::RoleError::RoleHasExists};
 use crate::errors::roles::RoleError::CurrentRoleHasUser;
-use crate::models::Page;
+use crate::models::{Api, Page};
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -51,6 +51,22 @@ pub struct AddRoleApi {
     #[serde(default)]
     pub role_id: i32,
     pub api_ids: Vec<i32>,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RoleApiCategory {
+    pub api_group: String,
+    pub items: Vec<RoleHasApi>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RoleHasApi {
+    pub id: i32,
+    pub name: String,
+    pub path: String,
+    pub method: String,
+    pub has: bool,
 }
 
 
@@ -165,5 +181,13 @@ impl Role {
                 _ => Err(e.into()),
             },
         }
+    }
+
+    pub async fn get_role_apis(db: &DbConn, role_id: i32) -> Result<Vec<i32>, DbErr> {
+        let role_apis = role_apis::Entity::find()
+            .filter(role_apis::Column::RoleId.eq(role_id))
+            .all(db)
+            .await?;
+        Ok(role_apis.into_iter().map(|role_api| role_api.api_id).collect())
     }
 }

@@ -12,6 +12,7 @@ pub fn role_router(cfg: &mut web::ServiceConfig) {
             .service(delete_role)
             .service(get_role_by_id)
             .service(add_role_apis)
+            .service(get_role_apis_group)
     );
 }
 
@@ -63,4 +64,13 @@ async fn add_role_apis(data: web::Data<AppState>, role_id: web::Path<i32>, api_i
     };
     let resp = services::role::Role::role_add_apis(db, role_api).await?;
     Ok(success_json(resp))
+}
+
+
+#[get("/{id}/api_router_group")]
+async fn get_role_apis_group(data: web::Data<AppState>, role_id: web::Path<i32>) -> Result<HttpResponse, Error> {
+    let db = &data.conn;
+    let role_id = role_id.into_inner();
+    let role_apis = services::role::Role::get_role_apis_group(db, role_id).await?;
+    Ok(success_json(role_apis))
 }

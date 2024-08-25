@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_hooks::*;
 use yewdux::use_store;
 use crate::apis::role::{get_role_list, QueryRoleParams};
-use crate::components::pagination::{PaginationState, Pagination, PaginationAction};
+use crate::components::pagination::{PaginationState,Pagination, PaginationAction};
 use super::api::Api;
 
 #[function_component(Role)]
@@ -18,6 +18,7 @@ pub fn component() -> Html {
     let total_pages = use_state(|| 0);
     let name = use_state(|| None);
     let roles = use_state(|| Vec::new());
+    let selected_role_id = use_state(|| None::<u32>);
 
     let query_params = use_memo(
         (state.current_page, state.page_size, name.clone()),
@@ -68,23 +69,35 @@ pub fn component() -> Html {
                     </tr>
                 </thead>
                 <tbody>
-                    {(*roles).iter().map(|role| html! {
+                {(*roles).iter().map(|role| {
+                    let role_id = role.id;
+                    html! {
                         <tr key={role.id}>
                             <td>{role.id}</td>
                             <td>{&role.name}</td>
                             <td>{&role.create_time.format("%Y-%m-%d %H:%M:%S").to_string()}</td>
                             <td>
-                                <button class="btn btn-sm btn-info me-2">{"编辑"}</button>
+                                <button class="btn btn-sm btn-info me-2" onclick={
+                                    let selected_role_id = selected_role_id.clone();
+                                    move |_| {
+                                        selected_role_id.set(Some(role_id));
+                                    }
+                                }>
+                                    {"编辑"}
+                                </button>
                                 <button class="btn btn-sm btn-danger">{"删除"}</button>
                             </td>
                         </tr>
-                    }).collect::<Html>()}
+                    }
+                }).collect::<Html>()}
                 </tbody>
             </table>
             <Pagination
                 total_pages={*total_pages}
             />
-        <Api/>
+            if let Some(role_id) = *selected_role_id {
+                <Api role_id={role_id} />
+            }
         </div>
     }
 }

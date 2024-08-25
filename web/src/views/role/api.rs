@@ -14,6 +14,11 @@ struct CheckboxProps {
     on_toggle: Callback<()>,
 }
 
+#[derive(Properties, PartialEq)]
+pub struct ApiProps {
+    pub role_id: u32,
+}
+
 #[function_component(Checkbox)]
 fn checkbox(CheckboxProps { label, path, checked, on_toggle }: &CheckboxProps) -> Html {
     let label_id = format!("checkbox-{}", label);
@@ -44,15 +49,15 @@ fn checkbox(CheckboxProps { label, path, checked, on_toggle }: &CheckboxProps) -
 }
 
 #[function_component(Api)]
-pub fn app() -> Html {
-    let (_, dispatch_err) = use_store::<ErrorState>();
+pub fn component(api_prop: &ApiProps) -> Html {
     let role_api_group = use_state(|| vec![]);
-    let role_id = use_state(|| 1);
-    let role_api_data: UseAsyncHandle<Vec<RoleApiCategory>, String> = {
-        let role_id = role_id.clone();
-        use_async(async move { get_role_apis_group(*role_id).await })
+    
+    let role_api_data = {
+        let role_id = api_prop.role_id;
+        use_async(async move { get_role_apis_group(role_id).await })
     };    
     {
+        let role_id = api_prop.role_id;
         let role_api_data = role_api_data.clone();   
         use_effect_with(role_id, move |_| {
             role_api_data.run();
@@ -64,8 +69,7 @@ pub fn app() -> Html {
             if let Some(data) = &role_api_data.data {
                 role_api_group.set(data.clone());
             }
-        });
-    
+        });    
     }
 
    

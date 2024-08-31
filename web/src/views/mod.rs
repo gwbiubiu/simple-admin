@@ -6,12 +6,14 @@ mod role;
 mod dashboard;
 mod api;
 mod login;
+mod features;
+mod pages;
 
-use login::Login;
 use not_found::NotFound;
 use dashboard::Dashboard;
 
 use crate::components::error::ErrorComponent;
+use self::pages::Login;
 
 
 #[derive(Clone, Routable, PartialEq)]
@@ -32,7 +34,7 @@ pub enum Route {
 fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => html! { <h1>{"Welcome to Home Page"}</h1> },
-        Route::Login => html! { <Login /> },
+        Route::Login => html!{<Login/>},
         Route::Dashboard | Route::DashboardChild => html! { <Dashboard /> },
         Route::NotFound => html! { <NotFound /> },
     }

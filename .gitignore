@@ -2,3 +2,4 @@
 .idea
 
 /web/dist
+/node_modules

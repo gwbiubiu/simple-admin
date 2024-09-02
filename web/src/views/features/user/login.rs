@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use super::landing_intro::LandingIntro;
+use crate::components::input::InputText;
 
 
 
@@ -13,7 +14,13 @@ pub fn login() -> Html {
                     <LandingIntro/>
                 </div>
                 <div class="py-24 px-10">
-                    <p>{"this is login page"}</p>
+                    <h2 class="text-2xl font-semibold mb-2 text-center">{"Login"}</h2>
+                    <form>
+                        <div class="mb-4">
+                            <InputText container_style="mt-4" label_title="username" />
+                            <InputText container_style="mt-4" label_title="password"/>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

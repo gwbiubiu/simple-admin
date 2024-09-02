@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use super::components::TemplatePointers;
 
 #[function_component(LandingIntro)]
 pub fn landing_intro() -> Html {
@@ -13,6 +14,7 @@ pub fn landing_intro() -> Html {
                     <div class="text-center mt-12">
                         <img src="./intro.png" alt="Dashwind Admin Template" class="w-48 inline-block"/>
                     </div>
+                    <TemplatePointers/>
                 </div>
 
             </div>

@@ -6,7 +6,11 @@
 cargo run -p server
 ```
 ## start web
-first you need to install wasm environment
+first install daisyui dependency
+```bash
+npm install
+```
+second you need to install wasm environment
 ```bash
 rustup target add wasm32-unknown-unknown
 cargo install trunk

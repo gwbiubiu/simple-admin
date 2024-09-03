@@ -9,11 +9,11 @@ pub struct InputTextProps {
 #[function_component(InputText)]
 pub fn input_text(props: &InputTextProps) -> Html {
     html! {
-        <div class={format!("form-control w-full {}", props.container_style)}>
-            <label class="label">
+        <div class={format!("w-full {}", props.container_style)}>
+            <label class="label mb-2">
                 <span class="label-text text-base-content">{props.label_title.clone()}</span>
             </label>
-            <input type="text" class="input  input-bordered w-full"/>
+            <input type="text" class="input input-bordered w-full"/>
         </div>
     }
 }

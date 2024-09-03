@@ -14,6 +14,7 @@ use dashboard::Dashboard;
 
 use crate::components::error::ErrorComponent;
 use self::pages::Login;
+use crate::containers::Layout;
 
 
 #[derive(Clone, Routable, PartialEq)]
@@ -29,6 +30,8 @@ pub enum Route {
     #[not_found]
     #[at("/404")]
     NotFound,
+    #[at("/app/*")]
+    Layout,
 }
 
 fn switch(routes: Route) -> Html {
@@ -37,6 +40,7 @@ fn switch(routes: Route) -> Html {
         Route::Login => html!{<Login/>},
         Route::Dashboard | Route::DashboardChild => html! { <Dashboard /> },
         Route::NotFound => html! { <NotFound /> },
+        Route::Layout => html! { <h1>{"Layout"}</h1> },
     }
 }
 

@@ -40,7 +40,7 @@ fn switch(routes: Route) -> Html {
         Route::Login => html!{<Login/>},
         Route::Dashboard | Route::DashboardChild => html! { <Dashboard /> },
         Route::NotFound => html! { <NotFound /> },
-        Route::Layout => html! { <h1>{"Layout"}</h1> },
+        Route::Layout => html! { <Layout /> },
     }
 }
 

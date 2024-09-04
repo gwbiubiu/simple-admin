@@ -1,10 +1,12 @@
 use yew::prelude::*;
 
+use super::header::Header;
+
 #[function_component(PageContent)]
 pub fn page_content() -> Html {
     html! {
-        <div>
-            <h1>{"Page Content"}</h1>
+        <div class="drawer-content flex flex-col ">
+            <Header/>
         </div>
     }
 }

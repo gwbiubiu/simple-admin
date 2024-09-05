@@ -1,8 +1,7 @@
-use yew::prelude::*;
-use yew_router::prelude::*;
 use crate::routers::SIDERBAR_ROUTERS;
+use yew::prelude::*;
 use yew_icons::Icon;
-
+use yew_router::prelude::*;
 
 #[derive(Clone, PartialEq, Routable)]
 enum AppRoutes {
@@ -12,12 +11,21 @@ enum AppRoutes {
     Other { path: String },
 }
 
-
 #[function_component(LeftSidebar)]
 pub fn left_sidebar() -> Html {
     let location = use_location().unwrap();
+    let sidebar_ref = use_node_ref();
+    let close_sidebar = {
+        let sidebar_ref = sidebar_ref.clone();
+        Callback::from(move |_| {
+            if let Some(sidebar) = sidebar_ref.cast::<web_sys::HtmlElement>() {
+                sidebar.click();
+            }
+        })
+    };
+
     html! {
-        <div class="drawer-side z-30">
+        <div class= "drawer-side z-30" ref={sidebar_ref}>
             <label for="left-sidebar-drawer" class="drawer-overlay"></label>
             <ul class="menu pt-2 w-80 bg-base-100 min-h-full text-base-content">
                 <div class="flex items-center justify-between mb-2">
@@ -26,7 +34,7 @@ pub fn left_sidebar() -> Html {
                             <img class="mask mask-squircle w-10" src="/logo192.png" alt="DashWind Logo"/>{"DashWind"}
                         </Link<AppRoutes>>
                     </li>
-                    <button class="btn btn-ghost bg-base-300 btn-circle z-50 top-0 right-0 lg:hidden">
+                    <button class="btn btn-ghost bg-base-300 btn-circle z-50 top-0 right-0 lg:hidden" onclick={close_sidebar.clone()}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             class="h-6 w-6"
@@ -49,7 +57,7 @@ pub fn left_sidebar() -> Html {
                                     let is_active = location.path() == router.path;
                                     html!{
                                         <li>
-                                            <Link<AppRoutes> 
+                                            <Link<AppRoutes>
                                                 to={AppRoutes::Other { path: router.path.to_string() }}
                                                 classes={classes!(if is_active { "font-semibold bg-base-200 items-center" } else { "font-normal items-center" })}>
                                                 <Icon icon_id={router.icon_id} />{router.name}

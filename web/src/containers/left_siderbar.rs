@@ -25,8 +25,8 @@ pub fn left_sidebar() -> Html {
     };
 
     html! {
-        <div class= "drawer-side z-30" ref={sidebar_ref}>
-            <label for="left-sidebar-drawer" class="drawer-overlay"></label>
+        <div class= "drawer-side z-30">
+            <label for="left-sidebar-drawer" class="drawer-overlay" ref={sidebar_ref}></label>
             <ul class="menu pt-2 w-80 bg-base-100 min-h-full text-base-content">
                 <div class="flex items-center justify-between mb-2">
                     <li class="font-semibold text-xl">

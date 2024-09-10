@@ -11,6 +11,34 @@ pub fn header() -> Html {
                 </label>
                 <h1 class="text-2xl font-semibold ml-2">{"Header"}</h1>
             </div>
+            <div class="flex-none">
+                <label class="swap">
+                    <input type="checkbox"/>
+                    <Icon icon_id={IconId::BootstrapSun} class="fill-current w-6 h-6"/>
+                    //<Icon icon_id={IconId::BootstrapMoon} class="h-5 inline-block w-5"/>
+                </label>
+                <button class="btn btn-ghost ml-4  btn-circle">
+                    <div class="indicator">
+                        <Icon icon_id={IconId::BootstrapBell} class="h-6 w-6"/>
+                        <span class="indicator-item badge-sm badge-secondary rounded-full">{"3"}</span>
+                    </div>
+                </button>
+                <div class="dropdown dropdown-end ml-4">
+                    <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+                        <div class="=w-10 rounded-full">
+                            <img src="https://avatars.githubusercontent.com/u/57338234?v=4" alt="avatar"/>
+                        </div>
+                    </label>
+                    <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+                        <li class="">
+                        <a>{"Profile Settings"} <span class="badge-sm badge badge-accent">{"New"}</span> </a>
+                        </li>
+                        <li class=""><a>{"Bill History"}</a></li>
+                        <div class="divider mt-0 mb-0"></div>
+                        <li><a>{"Logout"}</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     }
 }

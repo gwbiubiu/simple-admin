@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew_icons::{Icon, IconId};
+use crate::features::common::components::notification_body_right_drawer::NotificationBodyRightDrawer;
 #[derive(Properties, Clone, PartialEq)]
 pub struct RightSidebarProps {
     #[prop_or_default]
@@ -37,7 +38,7 @@ pub fn right_sidebar(props: &RightSidebarProps) -> Html {
 
                             <div class="overflow-y-scroll pl-4 pr-4 flex flex-col w-full">
                                 <div className="flex flex-col w-full">
-                                    <p>{ "No new notifications" }</p>
+                                    <NotificationBodyRightDrawer/>
                                 </div>
                             </div>
                         </div>

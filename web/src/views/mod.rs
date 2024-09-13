@@ -6,14 +6,11 @@ mod role;
 mod dashboard;
 mod api;
 mod login;
-mod features;
-mod pages;
-
 use not_found::NotFound;
 use dashboard::Dashboard;
 
 use crate::components::error::ErrorComponent;
-use self::pages::Login;
+use crate::pages::Login;
 use crate::containers::Layout;
 
 

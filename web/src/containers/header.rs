@@ -1,8 +1,16 @@
+use crate::features::common::right_drawer_slice::RightDrawerState;
 use yew::prelude::*;
 use yew_icons::{Icon, IconId};
-
+use yewdux::prelude::*;
 #[function_component(Header)]
 pub fn header() -> Html {
+    let (_, dispatch) = use_store::<RightDrawerState>();
+    let open_notification = {
+        dispatch.reduce_mut_callback(|state| {
+            state.is_open = true;
+        })
+    };
+
     html! {
         <div class="navbar sticky top-0 bg-base-100 z-10 shadow-md">
             <div class="flex-1">
@@ -17,7 +25,7 @@ pub fn header() -> Html {
                     <Icon icon_id={IconId::BootstrapSun} class="fill-current w-6 h-6"/>
                     //<Icon icon_id={IconId::BootstrapMoon} class="h-5 inline-block w-5"/>
                 </label>
-                <button class="btn btn-ghost ml-4  btn-circle">
+                <button class="btn btn-ghost ml-4  btn-circle" onclick={open_notification}>
                     <div class="indicator">
                         <Icon icon_id={IconId::BootstrapBell} class="h-6 w-6"/>
                         <span class="indicator-item badge-sm badge-secondary rounded-full">{"3"}</span>

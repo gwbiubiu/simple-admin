@@ -14,7 +14,7 @@ pub fn layout() -> Html {
             <PageContent/>
         </div>
         <p>{"为什么啊"}</p>
-        <RightSidebar is_open=true />
+        <RightSidebar />
         //TODO: add notification
         <ModalLayout/>
         </>

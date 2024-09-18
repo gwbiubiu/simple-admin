@@ -13,7 +13,6 @@ pub fn layout() -> Html {
             <LeftSidebar/>
             <PageContent/>
         </div>
-        <p>{"为什么啊"}</p>
         <RightSidebar />
         //TODO: add notification
         <ModalLayout/>

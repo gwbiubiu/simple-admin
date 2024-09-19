@@ -1,15 +1,7 @@
-use crate::routers::SIDERBAR_ROUTERS;
+use crate::routers::{SIDERBAR_ROUTERS,AppRoutes};
 use yew::prelude::*;
 use yew_icons::Icon;
 use yew_router::prelude::*;
-
-#[derive(Clone, PartialEq, Routable)]
-enum AppRoutes {
-    #[at("/app/welcome")]
-    Welcome,
-    #[at("/app/:path")]
-    Other { path: String },
-}
 
 #[function_component(LeftSidebar)]
 pub fn left_sidebar() -> Html {

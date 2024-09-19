@@ -1,6 +1,6 @@
 use yewdux::prelude::*;
 
-#[derive(Clone, PartialEq, Store)]
+#[derive(Clone, PartialEq, Store, Default)]
 pub struct ModalState {
     pub is_open: bool,
     pub size: ModalSize,
@@ -13,12 +13,3 @@ pub enum ModalSize {
     Large,
 }
 
-
-impl Default for ModalState {
-    fn default() -> Self {
-        Self {
-            is_open: false,
-            size: ModalSize::Small,
-        }
-    }
-}

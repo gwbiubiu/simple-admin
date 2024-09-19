@@ -1,3 +1,3 @@
 mod login;
-mod protected;
+pub mod protected;
 pub use login::*;

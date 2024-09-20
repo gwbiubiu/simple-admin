@@ -17,4 +17,4 @@ gloo = "0.11.0"
 yew-router = "0.18.0"
 yewdux = { version = "0.10.0"}
 yew-hooks = "0.3.2"
-yew_icons = { version = "0.8.0", features = ["LucideUsers", "LucideUserCog", "BootstrapRouter", "BootstrapMoon","BootstrapSun","BootstrapJustify", "BootstrapBell", "OcticonsX16","HeroiconsOutlineSquares2X2"] }
+yew_icons = { version = "0.8.0", features = ["HeroiconsOutlineFaceFrown","LucideUsers", "LucideUserCog", "BootstrapRouter", "BootstrapMoon","BootstrapSun","BootstrapJustify", "BootstrapBell", "OcticonsX16","HeroiconsOutlineSquares2X2"] }

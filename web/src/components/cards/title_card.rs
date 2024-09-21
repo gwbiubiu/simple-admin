@@ -1,13 +1,14 @@
-use yew::prelude::*;
 use super::super::typography::SubTitle;
+use yew::prelude::*;
 
 #[derive(Properties, PartialEq, Clone)]
-pub struct TitleCardProps{
+pub struct TitleCardProps {
     pub title: String,
     pub top_margin: String,
     pub top_side_buttons: Option<Html>,
+    #[prop_or_default]
+    pub children: Children,
 }
-
 
 #[function_component(TitleCard)]
 pub fn title_card(props: &TitleCardProps) -> Html {
@@ -24,6 +25,11 @@ pub fn title_card(props: &TitleCardProps) -> Html {
                         }
                     }
                 </SubTitle>
+                <div class="divider mt-2"></div>
+                <div class="h-full w-full pb-6 bg-base-100-100">
+                    {for props.children.iter()}
+                </div>
+                
             </div>
         </div>
     }

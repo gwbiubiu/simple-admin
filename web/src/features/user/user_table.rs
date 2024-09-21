@@ -1,5 +1,6 @@
 use crate::apis::user::{get_user_list, QueryUserParams};
 use crate::components::cards::title_card::TitleCard;
+use crate::components::page::{Pagination,PageInfo};
 use yew::prelude::*;
 use yew_hooks::*;
 
@@ -15,20 +16,27 @@ fn top_side_buttons() -> Html {
 #[function_component(UserManagement)]
 pub fn user_management() -> Html {
     let users = use_state(|| Vec::new());
+    let page = use_state(|| 0);
+    let page_size = use_state(|| 10);
+    let query_params = use_memo(((*page).clone(), (*page_size).clone()), |(page, page_size)|{
+        QueryUserParams {
+            page: *page,
+            page_size: *page_size,
+            username: None,
+        }
+    });
     let user_data = {
-        let query = QueryUserParams::new();
+        let query = (*query_params).clone();
         use_async(async move { get_user_list(query).await })
     };
 
     {
         let user_data = user_data.clone();
-        use_effect_once(move || {
+        use_effect_with(query_params.clone(), move |_| {
             user_data.run();
-            || {}
         });
     } 
 
-    
 
     {
         let users = users.clone();
@@ -38,6 +46,14 @@ pub fn user_management() -> Html {
             }
         });
     }
+    
+    let page_change = {
+        Callback::from(move |page_info: PageInfo| {
+            page.set(page_info.page);
+            page_size.set(page_info.page_size);
+        })
+    };
+    
     html! {
         <>
             <TitleCard title="User Management" top_margin="mt-2" top_side_buttons={Some(html!{<TopSideButtons/>})}>
@@ -68,6 +84,7 @@ pub fn user_management() -> Html {
                         </tbody>
                     </table>
                 </div>
+                <Pagination page_change={page_change}/>
             </TitleCard>
 
         </>

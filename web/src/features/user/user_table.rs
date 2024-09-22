@@ -88,7 +88,7 @@ pub fn user_management() -> Html {
                         </tbody>
                     </table>
                 </div>
-                <Pagination page_change={page_change}/>
+                <Pagination page_change={page_change} total={3}/>
             </TitleCard>
 
         </>

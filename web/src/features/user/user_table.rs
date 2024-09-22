@@ -3,6 +3,8 @@ use crate::components::cards::title_card::TitleCard;
 use crate::components::page::{Pagination,PageInfo};
 use yew::prelude::*;
 use yew_hooks::*;
+use gloo::console::log;
+
 
 #[function_component(TopSideButtons)]
 fn top_side_buttons() -> Html {
@@ -49,6 +51,8 @@ pub fn user_management() -> Html {
     
     let page_change = {
         Callback::from(move |page_info: PageInfo| {
+            let page_info_string = serde_json::to_string(&page_info).unwrap();
+            log!("call page_change: {:?}", page_info_string);
             page.set(page_info.page);
             page_size.set(page_info.page_size);
         })

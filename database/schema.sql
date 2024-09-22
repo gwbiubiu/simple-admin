@@ -47,9 +47,9 @@ CREATE TABLE `user_roles` (
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
+  `email` varchar(255)  NOT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `enabled` tinyint DEFAULT NULL,
+  `enabled` tinyint NOT NULL DEFAULT '1',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

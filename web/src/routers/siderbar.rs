@@ -40,7 +40,7 @@ pub const SIDERBAR_ROUTERS: &[Router] = &[
         sub_routers: None,
     },
     Router {
-        path:"auths",
+        path:"apis",
         name:"API管理",
         icon_id: IconId::BootstrapRouter,
         sub_routers: None,

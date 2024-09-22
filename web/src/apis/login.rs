@@ -1,49 +1,26 @@
-use std::future::Future;
-use serde::{Deserialize, Serialize};
 use super::{post, Status};
-
-
-pub enum Msg {
-    UpdateUsername(String),
-    UpdatePassword(String),
-    ToggleRememberMe,
-    Submit,
-    LoginSuccess(String),
-    Error(String),
-}
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
-pub struct Login {
-    username: String,
-    password: String,
+pub struct LoginParam {
+    pub username: String,
+    pub password: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct RespToken {
     token: String,
     expire: i64,
 }
-impl Login {
-    pub fn new(username: String, password: String) -> Self {
-        Self {
-            username,
-            password,
-        }
-    }
-}
 
-pub fn login(username: String, password: String) -> impl Future<Output=Msg> {
-    async move {
-        let param = Login::new(username, password);
-        match post::<Login, RespToken>("/api/v1/login", param).await {
-            Ok(resp) => {
-                if resp.status == Status::SUCCESS {
-                    return Msg::LoginSuccess(resp.data.unwrap().token);
-                }
-                return Msg::Error(resp.message);
+pub async  fn login(param: LoginParam) -> Result<RespToken, String> {
+    match post::<_, RespToken>("/api/v1/login", param).await {
+        Ok(resp) => {
+            if resp.status == Status::SUCCESS {
+                return Ok(resp.data.unwrap());
             }
-            Err(_) => Msg::Error("Server Internal error".to_string()),
+            return Err(resp.message);
         }
+        Err(_) => Err("Server Internal error".to_string()),
     }
 }
-

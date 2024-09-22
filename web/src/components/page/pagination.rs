@@ -1,3 +1,5 @@
+use std::ops::Div;
+
 use serde::Serialize;
 use web_sys::HtmlSelectElement;
 use yew::prelude::*;
@@ -18,7 +20,7 @@ pub fn pagination(props: &PaginationProps) -> Html {
     let current_page = use_state(|| 1);
     let page_size = use_state(|| 10);
     let page_sizes = vec![10, 20, 50];
-    let total_pages = props.total;
+    let total_pages = props.total.div(*page_size);
 
     let on_page_change = {
         let current_page = current_page.clone();

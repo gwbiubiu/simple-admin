@@ -49,7 +49,7 @@ async fn update_user_status(data: web::Data<AppState>, id: web::Path<i32>) -> Re
 async fn get_user_list(data: web::Data<AppState>, query: web::Query<models::QueryUsers>) -> Result<HttpResponse, Error> {
     let conn = &data.conn;
     let query_inner = query.into_inner();
-    let (users, total) = User::get_user_list(conn, query_inner.clone()).await.map_err(|_e| AppError::SystemError("find user list failed".to_string()))?;
+    let (users, total) = User::get_user_list(conn, query_inner.clone()).await.map_err(|e| AppError::SystemError(e.to_string()))?;
     let page = Page::new(query_inner.page.page, query_inner.page.size, total);
     Ok(success_json(PageResponse::new(page, users)))
 }

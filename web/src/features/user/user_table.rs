@@ -18,11 +18,12 @@ fn top_side_buttons() -> Html {
 #[function_component(UserManagement)]
 pub fn user_management() -> Html {
     let users = use_state(|| Vec::new());
-    let page = use_state(|| 0);
+    let page = use_state(|| 1);
     let page_size = use_state(|| 10);
+    let total = use_state(|| 0);
     let query_params = use_memo(((*page).clone(), (*page_size).clone()), |(page, page_size)|{
         QueryUserParams {
-            page: *page,
+            page: *page-1,
             page_size: *page_size,
             username: None,
         }
@@ -42,9 +43,11 @@ pub fn user_management() -> Html {
 
     {
         let users = users.clone();
+        let total = total.clone();
         use_effect_with(user_data.clone(), move |user_data| {
             if let Some(data) = &user_data.data {
                 users.set(data.items.clone());
+                total.set(data.page.total);
             }
         });
     }
@@ -88,7 +91,7 @@ pub fn user_management() -> Html {
                         </tbody>
                     </table>
                 </div>
-                <Pagination page_change={page_change} total={3}/>
+                <Pagination page_change={page_change} total={*total}/>
             </TitleCard>
 
         </>

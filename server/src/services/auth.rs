@@ -1,27 +1,40 @@
 use anyhow::Result;
 use argon2::Argon2;
 use password_hash::{PasswordHash, PasswordVerifier};
-use crate::{errors::AppError, models};
-use sea_orm::*;
+use crate::{errors::AppError, models, models::auth::Claims};
+use crate::errors::user::UserError::InvalidUserNameOrPassword;
+use actix_web::web;
+use crate::global::AppState;
+use time::{Duration, OffsetDateTime};
+use jsonwebtoken::{encode, EncodingKey, Header};
 
 
 pub struct Auth;
 
 impl Auth {
-    pub async fn login(db: &DbConn, login: models::Login) -> Result<models::Token, AppError> {
-        let user = login.find_user_by_username(db).await?.unwrap();
+    pub async fn login(data: web::Data<AppState>, login: models::Login) -> Result<models::Token, AppError> {
+        let user = login.find_user_by_username(&data.conn).await?;
+        let user = user.ok_or(AppError::UserError(InvalidUserNameOrPassword))?;
         let parsed_hash = PasswordHash::new(&user.password).unwrap();
         if !Argon2::default().verify_password(login.password.as_bytes(), &parsed_hash).is_ok() {
-            return Err(AppError::UserError(crate::errors::user::UserError::InvalidPassword));
+            return Err(AppError::UserError(InvalidUserNameOrPassword));
         }
+        
+        let expiration = OffsetDateTime::now_utc() + Duration::seconds(data.config.jwt.expires_time);
+        let claims = Claims {
+            sub: user.id.to_string(),
+            exp: expiration.unix_timestamp(),
+            iat: OffsetDateTime::now_utc().unix_timestamp(),
+            iss: (&data.config.jwt.issuer).to_string(),
+        };
+        let secret = &data.config.jwt.signing_key.as_bytes();  // 在实际应用中，应该使用环境变量或配置文件来存储密钥
+        let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret)).unwrap();
+    
 
-        match models::Login::generate_jwt(&user.id.to_string()) {
-            Ok(token) => Ok(models::Token {
-                token,
-                expire: 0, // 设置实际的过期时间
-            }),
-            Err(_) => Err(AppError::SystemError("生成token失败".to_string())),
-        }
+        Ok(models::Token {
+            token,
+            expire: expiration.unix_timestamp(),
+        })
     }
 }
 

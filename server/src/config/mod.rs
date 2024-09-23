@@ -1,27 +1,18 @@
-
+mod database;
+mod jwt;
 use std::fs::File;
 use std::io::Read;
-
 use serde::Deserialize;
+use self::database::Database;
+use self::jwt::Jwt;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    database: Database,
+    pub database: Database,
+    pub jwt: Jwt,
 }
 
-#[derive(Debug, Deserialize)]
-struct Database {
-    mysql: Mysql,
-}
 
-#[derive(Debug, Deserialize)]
-struct Mysql {
-    host: String,
-    port: u32,
-    user: String,
-    password: String,
-    database: String,
-}
 
 impl Default for Config {
     fn default() -> Self {
@@ -39,15 +30,3 @@ impl Default for Config {
     }
 }
 
-impl Config {
-    pub fn get_db_url(&self) -> String {
-        format!(
-            "mysql://{}:{}@{}:{}/{}",
-            self.database.mysql.user,
-            self.database.mysql.password,
-            self.database.mysql.host,
-            self.database.mysql.port,
-            self.database.mysql.database
-        )
-    }
-}

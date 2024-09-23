@@ -1,5 +1,5 @@
 pub mod user;
-mod auth;
+pub mod auth;
 pub mod role;
 pub mod api;
 mod menu;

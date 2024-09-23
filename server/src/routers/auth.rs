@@ -1,5 +1,5 @@
-use actix_web::{Error,  HttpResponse, post, web};
-use crate::{AppState,  models, success_json};
+use actix_web::{Error,  HttpResponse, post, web,cookie::Cookie};
+use crate::{AppState, models, Response, Status};
 use crate::services::Auth;
 
 pub fn auth_router(cfg: &mut web::ServiceConfig) {
@@ -9,8 +9,18 @@ pub fn auth_router(cfg: &mut web::ServiceConfig) {
 
 #[post("/login")]
 async fn login(data: web::Data<AppState>, login: web::Json<models::Login>) -> anyhow::Result<HttpResponse, Error> {
-    let conn = &data.conn;
     let login = login.into_inner();
-    let token = Auth::login(conn, login).await?;
-    Ok(success_json(&token))
+    let jwt = &data.config.jwt;
+    let token = Auth::login(data.clone(), login).await?;
+    let cookie = Cookie::build("auth", token.token.clone())
+                .secure(jwt.secure)
+                .http_only(jwt.http_only)
+                .finish();
+    let resp = Response {
+        status: Status::SUCCESS,
+        code: 200,
+        message: "".to_string(),
+        data: Some(token),
+    };
+    Ok(actix_web::HttpResponse::Ok().cookie(cookie).json(resp))
 }

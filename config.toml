@@ -5,3 +5,10 @@ port = 3366
 user = "root"
 password = "WJ6ZuHHAhhQ2Dj8"
 database = "test"
+
+[jwt]
+signing_key= 'gwbiubiu'
+issuer= 'gwbiubiu'
+expires_time= 604800
+http_only=false
+secure=false

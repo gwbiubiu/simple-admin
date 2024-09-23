@@ -1,8 +1,6 @@
-use time::{Duration, OffsetDateTime};
 use serde::{Deserialize, Serialize};
 use crate::entities::{user::Entity as User, user};
 use anyhow::Result;
-use jsonwebtoken::{encode, EncodingKey, Header};
 use sea_orm::*;
 use crate::errors::{AppError, user::UserError::NotFound};
 
@@ -19,10 +17,11 @@ pub struct Login {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String,
-    exp: i64,
-    iat: i64,
+pub struct Claims {
+    pub sub: String,
+    pub exp: i64,
+    pub iat: i64,
+    pub iss: String,
 }
 
 impl Login {
@@ -34,16 +33,5 @@ impl Login {
             Some(user) => Ok(Some(user)),
             None => Err(AppError::UserError(NotFound)),
         }
-    }
-
-    pub fn generate_jwt(user_id: &str) -> Result<String> {
-        let expiration = OffsetDateTime::now_utc() + Duration::hours(24);
-        let claims = Claims {
-            sub: user_id.to_owned(),
-            exp: expiration.unix_timestamp(),
-            iat: OffsetDateTime::now_utc().unix_timestamp(),
-        };
-        let secret = b"abc123123";  // 在实际应用中，应该使用环境变量或配置文件来存储密钥
-        Ok(encode(&Header::default(), &claims, &EncodingKey::from_secret(secret))?)
     }
 }

@@ -7,8 +7,8 @@ pub enum UserError {
     NotFound,
     #[error("User already exists")]
     AlreadyExists,
-    #[error("Invalid password")]
-    InvalidPassword,
+    #[error("Invalid username or password ")]
+    InvalidUserNameOrPassword,
     #[error("Invalid email")]
     InvalidEmail,
     #[error("Invalid username")]

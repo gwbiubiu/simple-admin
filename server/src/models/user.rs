@@ -143,6 +143,20 @@ impl User {
 }
 
 
+impl From<user::Model> for User {
+    fn from(user: user::Model) -> Self {
+        Self {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            password: None,
+            enabled: user.enabled,
+            create_time: user.create_time,
+            update_time: user.update_time,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

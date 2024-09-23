@@ -3,7 +3,7 @@ use actix_web::{App, HttpRequest, HttpResponse, HttpServer, middleware, web, Err
 use actix_web::middleware::TrailingSlash;
 use anyhow::Result;
 use log::info;
-use sea_orm::{Database};
+use sea_orm::Database;
 use server::{Config, AppState, routers};
 use actix_cors::Cors;
 
@@ -15,11 +15,11 @@ async fn main() -> Result<()> {
     }
     tracing_subscriber::fmt::init();
 
-    let db_url = config.get_db_url();
+    let db_url = config.database.get_db_url();
 
     let conn = Database::connect(&db_url).await?;
 
-    let state = web::Data::new(AppState { conn });
+    let state = web::Data::new(AppState { conn, config });
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -27,6 +27,7 @@ async fn main() -> Result<()> {
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
+            .supports_credentials()
             .max_age(3600);
 
 

@@ -1,3 +1,4 @@
+use gloo::console::log;
 use yew::prelude::*;
 use yew_hooks::use_async;
 use super::landing_intro::LandingIntro;
@@ -5,7 +6,7 @@ use crate::components::input::{InputText,TextType};
 use crate::components::typography::ErrorText;
 use crate::apis::login::{login as user_login, LoginParam};
 use gloo::utils::document;
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlInputElement,window};
 use wasm_bindgen::JsCast;
 
 
@@ -37,10 +38,15 @@ pub fn login() -> Html {
 
     let on_login_click = {
         let login_data = login_data.clone();
-        Callback::from(move |_| {
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
             login_data.run();
         })
     };
+
+    if let Some(_) = &login_data.data {
+        window().unwrap().location().set_href("/app/dashboard").unwrap();
+    }
 
 
     html!{

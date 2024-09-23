@@ -12,10 +12,14 @@ async fn login(data: web::Data<AppState>, login: web::Json<models::Login>) -> an
     let login = login.into_inner();
     let jwt = &data.config.jwt;
     let token = Auth::login(data.clone(), login).await?;
-    let cookie = Cookie::build("auth", token.token.clone())
-                .secure(jwt.secure)
-                .http_only(jwt.http_only)
-                .finish();
+    // let cookie = Cookie::build("auth", token.token.clone())
+    //             .secure(jwt.secure)
+    //             .http_only(jwt.http_only)
+    //             .finish();
+    let cookie = Cookie::build("username", "rustacean")
+        .secure(false) 
+        .http_only(true) 
+        .finish();
     let resp = Response {
         status: Status::SUCCESS,
         code: 200,

@@ -23,11 +23,13 @@ async fn main() -> Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://127.0.0.1:8081")
-            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
-            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-            .allowed_header(http::header::CONTENT_TYPE)
+            //.allowed_origin("http://127.0.0.1:8081")
+            // .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+            // .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .supports_credentials()
+            .allow_any_header()
+            .allow_any_method()
+            .allow_any_origin()
             .max_age(3600);
 
 

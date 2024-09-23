@@ -1,4 +1,3 @@
-use gloo::console::log;
 use yew::prelude::*;
 use yew_hooks::use_async;
 use super::landing_intro::LandingIntro;
@@ -6,9 +5,8 @@ use crate::components::input::{InputText,TextType};
 use crate::components::typography::ErrorText;
 use crate::apis::login::{login as user_login, LoginParam};
 use gloo::utils::document;
-use web_sys::{HtmlInputElement,window};
+use web_sys::{HtmlInputElement,window,HtmlDocument};
 use wasm_bindgen::JsCast;
-
 
 
 #[function_component(Login)]
@@ -44,7 +42,13 @@ pub fn login() -> Html {
         })
     };
 
-    if let Some(_) = &login_data.data {
+    if let Some(data) = &login_data.data {
+        let token = data.token.clone();
+        let html_document =web_sys::window().unwrap().document().unwrap().dyn_into::<HtmlDocument>().unwrap();
+        let naive_datetime = chrono::DateTime::from_timestamp(data.expire, 0).unwrap();
+        let cookie_expiration = naive_datetime.format("%a, %d %b %Y %H:%M:%S GMT").to_string();
+        let cookie = format!("auth_token={};Path=/; Expires={}", token, cookie_expiration);
+        html_document.set_cookie(&cookie).unwrap();
         window().unwrap().location().set_href("/app/dashboard").unwrap();
     }
 

@@ -9,8 +9,8 @@ pub struct LoginParam {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct RespToken {
-    token: String,
-    expire: i64,
+   pub token: String,
+   pub expire: i64,
 }
 
 pub async  fn login(param: LoginParam) -> Result<RespToken, String> {

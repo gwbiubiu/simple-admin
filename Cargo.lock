@@ -3628,6 +3628,7 @@ dependencies = [
  "chrono",
  "gloo 0.11.0",
  "gloo-net 0.6.0",
+ "gloo-storage 0.3.0",
  "serde",
  "serde_json",
  "wasm-bindgen",

@@ -7,6 +7,8 @@ use actix_web::http::StatusCode;
 use actix_web::ResponseError;
 use thiserror::Error;
 use self::{user::UserError, api::ApiError, roles::RoleError};
+use crate::models::{Response,Status};
+
 
 #[allow(dead_code)]
 #[derive(Error, Debug)]
@@ -23,12 +25,6 @@ pub enum AppError {
     ApiError(ApiError),
     #[error("Role Error")]
     RoleError(RoleError),
-}
-
-#[derive(Debug, serde::Serialize)]
-struct ErrorResponse {
-    message: String,
-    code: u16,
 }
 
 impl ResponseError for AppError {
@@ -50,6 +46,6 @@ impl ResponseError for AppError {
             AppError::SystemError(msg) => msg.to_string(),
             _ => self.to_string(),
         };
-        actix_web::HttpResponse::build(code).json(ErrorResponse { message, code: code.as_u16() })
+        actix_web::HttpResponse::build(code).json(Response::<()> { status: Status::FAIL, message:message, code: 0 , data: None})
     }
 }

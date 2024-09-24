@@ -2,6 +2,7 @@ use super::left_siderbar::LeftSidebar;
 use super::page_content::PageContent;
 use super::right_siderbar::RightSidebar;
 use super::modal_layout::ModalLayout;
+use crate::components::notifications::Nofitication;
 use yew::prelude::*;
 
 #[function_component(Layout)]
@@ -14,7 +15,7 @@ pub fn layout() -> Html {
             <PageContent/>
         </div>
         <RightSidebar />
-        //TODO: add notification
+        <Nofitication/>
         <ModalLayout/>
         </>
     }

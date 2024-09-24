@@ -8,15 +8,15 @@ pub mod user;
 pub mod role;
 pub mod api;
 
-#[derive(Deserialize, PartialEq)]
+#[derive(Deserialize, PartialEq,Serialize)]
 pub enum Status {
     SUCCESS,
     FAIL,
 }
 
-#[derive(Deserialize)]
-#[allow(dead_code)]
+#[derive(Deserialize, Serialize)]
 pub struct Response<T> {
+
     pub status: Status,
     pub code: i64,
     pub message: String,

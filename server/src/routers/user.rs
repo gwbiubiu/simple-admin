@@ -1,10 +1,9 @@
 use actix_web::{get, HttpResponse, post, web, Error, put, delete};
 use crate::global::AppState;
-use crate::{models, success_json};
 use crate::services::User;
 use anyhow::Result;
 use crate::errors::AppError;
-use crate::models::{Page, PageResponse};
+use crate::models::{self, Page, PageResponse, success_json};
 
 pub fn user_router(cfg: &mut web::ServiceConfig) {
     cfg.service(

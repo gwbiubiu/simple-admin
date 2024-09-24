@@ -13,7 +13,7 @@ pub struct Auth;
 
 impl Auth {
     pub async fn login(data: web::Data<AppState>, login: models::Login) -> Result<models::Token, AppError> {
-        let user = login.find_user_by_username(&data.conn).await?;
+        let user = login.find_user_by_username(&data.conn).await.map_err(|_|AppError::UserError(InvalidUserNameOrPassword))?;
         let user = user.ok_or(AppError::UserError(InvalidUserNameOrPassword))?;
         let parsed_hash = PasswordHash::new(&user.password).unwrap();
         if !Argon2::default().verify_password(login.password.as_bytes(), &parsed_hash).is_ok() {

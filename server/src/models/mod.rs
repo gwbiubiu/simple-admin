@@ -2,6 +2,7 @@ pub mod user;
 pub mod auth;
 pub mod role;
 pub mod api;
+pub mod response;
 mod menu;
 
 
@@ -11,6 +12,7 @@ pub use auth::*;
 
 pub use api::*;
 
+pub use response::*;
 use serde::{Deserialize, Serialize};
 
 

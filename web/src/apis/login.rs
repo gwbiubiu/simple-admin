@@ -1,4 +1,5 @@
 use super::{post, Status};
+use gloo::console::log;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]
@@ -13,14 +14,12 @@ pub struct RespToken {
    pub expire: i64,
 }
 
-pub async  fn login(param: LoginParam) -> Result<RespToken, String> {
-    match post::<_, RespToken>("/api/v1/login", param).await {
-        Ok(resp) => {
-            if resp.status == Status::SUCCESS {
-                return Ok(resp.data.unwrap());
-            }
-            return Err(resp.message);
-        }
-        Err(_) => Err("Server Internal error".to_string()),
+pub async fn login(param: LoginParam) -> Result<RespToken, String> {
+    let resp =  post::<_, RespToken>("/api/v1/login", param).await?;
+    let resp_data = serde_json::to_string(&resp).unwrap();
+    log!("login data: {}", resp_data);
+    if resp.status == Status::SUCCESS {
+        return Ok(resp.data.unwrap());
     }
+    Err(resp.message)
 }

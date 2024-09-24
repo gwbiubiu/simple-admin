@@ -1,7 +1,7 @@
 use actix_web::{delete, Error, get, HttpResponse, post, put, web};
 use anyhow::Result;
-use crate::{AppState, services, success_json};
-use crate::models::{Page, PageResponse, role};
+use crate::{AppState, services};
+use crate::models::{Page, PageResponse, role, success_json};
 
 pub fn role_router(cfg: &mut web::ServiceConfig) {
     cfg.service(

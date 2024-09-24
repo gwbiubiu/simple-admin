@@ -8,7 +8,7 @@ pub struct LoginParam {
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
 pub struct RespToken {
    pub token: String,
    pub expire: i64,

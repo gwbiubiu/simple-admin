@@ -1,11 +1,10 @@
-use gloo::console::log;
 use yew::prelude::*;
 use yew_hooks::use_async;
 use super::landing_intro::LandingIntro;
 use crate::components::input::{InputText,TextType};
 use crate::components::typography::ErrorText;
 use crate::apis::login::{login as user_login, LoginParam};
-use crate::features::common::notification_slice::use_notification_success;
+use crate::features::common::notification_slice::use_notification_warn;
 use gloo::utils::document;
 use web_sys::{HtmlInputElement,window,HtmlDocument};
 use wasm_bindgen::JsCast;
@@ -16,7 +15,7 @@ pub fn login() -> Html {
     let username = use_state(|| "".to_string());
     let password = use_state(|| "".to_string());
 
-    let success_notification = use_notification_success();
+    let success_notification = use_notification_warn();
 
     // Async hook for login action
     let login_data = use_async(async move{
@@ -45,26 +44,31 @@ pub fn login() -> Html {
             login_data.run();
         })
     };
-    match &login_data.data {
-        Some(data) => {
-            let token = data.token.clone();
-            let html_document =web_sys::window().unwrap().document().unwrap().dyn_into::<HtmlDocument>().unwrap();
-            let naive_datetime = chrono::DateTime::from_timestamp(data.expire, 0).unwrap();
-            let cookie_expiration = naive_datetime.format("%a, %d %b %Y %H:%M:%S GMT").to_string();
-            let cookie = format!("auth_token={};Path=/; Expires={}", token, cookie_expiration);
-            html_document.set_cookie(&cookie).unwrap();
-            success_notification("Login Success".to_string());
-            window().unwrap().location().set_href("/app/dashboard").unwrap();
-        }
-        None => {
-            if let Some(error) = &login_data.error {
-                success_notification(error.to_string());
-            }
-            let resp_data = serde_json::to_string(&login_data.error).unwrap();
-            log!("login data: {}", resp_data);
-        }
+
+    {
+        let login_data = login_data.clone();
+        use_effect_with(login_data, move |login_data| {
+               if let Some(data) = &login_data.data {
+                    let token = data.token.clone();
+                    let html_document =web_sys::window().unwrap().document().unwrap().dyn_into::<HtmlDocument>().unwrap();
+                    let naive_datetime = chrono::DateTime::from_timestamp(data.expire, 0).unwrap();
+                    let cookie_expiration = naive_datetime.format("%a, %d %b %Y %H:%M:%S GMT").to_string();
+                    let cookie = format!("auth_token={};Path=/; Expires={}", token, cookie_expiration);
+                    html_document.set_cookie(&cookie).unwrap();
+                    success_notification("Login Success".to_string());
+                    window().unwrap().location().set_href("/app/dashboard").unwrap();
+                }else{
+                    if let Some(error) = &login_data.error{
+                        if login_data.loading==false {
+                            success_notification(error.to_string());
+                        }
+                    } 
+                }
+        });
     }
 
+
+   
     html!{
         <div class="min-h-screen bg-base-100 flex items-center">
         <div class="card mx-auto w-full max-w-5xl shadow-xl">

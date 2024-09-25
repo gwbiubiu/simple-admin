@@ -6,6 +6,8 @@ use log::info;
 use sea_orm::Database;
 use server::{Config, AppState, routers};
 use actix_cors::Cors;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 #[tokio::main] // or
 async fn main() -> Result<()> {
@@ -19,7 +21,11 @@ async fn main() -> Result<()> {
 
     let conn = Database::connect(&db_url).await?;
 
-    let state = web::Data::new(AppState { conn, config });
+    let redis_url = config.database.get_redis_url();
+    let redis_client = redis::Client::open(redis_url)?;
+    let redis_conn  = redis_client.get_multiplexed_async_connection().await?;
+
+    let state = web::Data::new(AppState { conn, config,redis_conn:Arc::new(Mutex::new(redis_conn)) });
 
     HttpServer::new(move || {
         let cors = Cors::default()

@@ -5,8 +5,7 @@ mod api;
 mod role;
 mod menu;
 
-use actix_web::{web};
-use serde::Serialize;
+use actix_web::web;
 
 pub fn router(cfg: &mut web::ServiceConfig) {
     cfg.service(

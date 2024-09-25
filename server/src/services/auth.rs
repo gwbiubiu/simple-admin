@@ -1,33 +1,36 @@
 use anyhow::Result;
 use argon2::Argon2;
 use password_hash::{PasswordHash, PasswordVerifier};
-use crate::{errors::AppError, models, models::auth::Claims};
+use crate::errors::AppError;
+use crate::models::{self, auth::Claims, auth::AUTH_TOKEN, auth::BLACK_AUTH_LIST};
 use crate::errors::user::UserError::InvalidUserNameOrPassword;
-use actix_web::web;
+use actix_web::{web,HttpRequest};
 use crate::global::AppState;
 use time::{Duration, OffsetDateTime};
 use jsonwebtoken::{encode, EncodingKey, Header};
+use redis::AsyncCommands;
+
 
 
 pub struct Auth;
 
 impl Auth {
     pub async fn login(data: web::Data<AppState>, login: models::Login) -> Result<models::Token, AppError> {
-        let user = login.find_user_by_username(&data.conn).await.map_err(|_|AppError::UserError(InvalidUserNameOrPassword))?;
+        let user = models::auth::Auth::find_user_by_username(&data.conn, &login).await.map_err(|_|AppError::UserError(InvalidUserNameOrPassword))?;
         let user = user.ok_or(AppError::UserError(InvalidUserNameOrPassword))?;
         let parsed_hash = PasswordHash::new(&user.password).unwrap();
         if !Argon2::default().verify_password(login.password.as_bytes(), &parsed_hash).is_ok() {
             return Err(AppError::UserError(InvalidUserNameOrPassword));
         }
         
-        let expiration = OffsetDateTime::now_utc() + Duration::seconds(data.config.jwt.expires_time);
+        let expiration = OffsetDateTime::now_utc() + Duration::seconds(data.config.jwt.expires_time as i64);
         let claims = Claims {
             sub: user.id.to_string(),
             exp: expiration.unix_timestamp(),
             iat: OffsetDateTime::now_utc().unix_timestamp(),
             iss: (&data.config.jwt.issuer).to_string(),
         };
-        let secret = &data.config.jwt.signing_key.as_bytes();  // 在实际应用中，应该使用环境变量或配置文件来存储密钥
+        let secret = &data.config.jwt.signing_key.as_bytes(); 
         let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(secret)).unwrap();
     
 
@@ -35,6 +38,13 @@ impl Auth {
             token,
             expire: expiration.unix_timestamp(),
         })
+    }
+    pub async fn logout(app: web::Data<AppState>, req: HttpRequest) -> Result<(), AppError> {
+        if let Some(cookie) = req.cookie(AUTH_TOKEN){
+            let token = cookie.value();
+            models::auth::Auth::add_token_to_black_list(app, token).await?;
+        }
+        Ok(())
     }
 }
 

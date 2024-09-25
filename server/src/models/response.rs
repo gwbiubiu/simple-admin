@@ -31,3 +31,12 @@ pub fn success_json<T: Serialize>(data: T) -> actix_web::HttpResponse {
         data: Some(data),
     })
 }
+
+pub fn success_none() -> actix_web::HttpResponse {
+    json(Response::<()> {
+        status: Status::SUCCESS,
+        code: 200,
+        message: "".to_string(),
+        data: None,
+    })
+}

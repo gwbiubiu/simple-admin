@@ -1,27 +1,27 @@
 pub mod user;
 pub mod api;
 pub mod roles;
+mod database;
 mod menu;
 
 use actix_web::http::StatusCode;
 use actix_web::ResponseError;
 use thiserror::Error;
-use self::{user::UserError, api::ApiError, roles::RoleError};
+use self::{user::UserError, api::ApiError, roles::RoleError, database::DatabaseError};
 use crate::models::{Response,Status};
 
 
-#[allow(dead_code)]
 #[derive(Error, Debug)]
 pub enum AppError {
     #[error("BadRequest: {0}")]
     BadRequest(String),
     #[error("DatabaseError: {0}")]
-    DatabaseError(#[from]sea_orm::DbErr),
+    DatabaseError(#[from] DatabaseError),
     #[error("Internal Server Error")]
     SystemError(String),
     #[error("User Error")]
     UserError(UserError),
-    #[error("Api Error")]
+    #[error("Api Error")] 
     ApiError(ApiError),
     #[error("Role Error")]
     RoleError(RoleError),

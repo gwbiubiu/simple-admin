@@ -5,7 +5,12 @@ port = 3366
 user = "root"
 password = "WJ6ZuHHAhhQ2Dj8"
 database = "test"
-
+[database.redis]
+host = "127.0.0.1"
+port = 6378
+user = ""
+password = ""
+database = 2
 [jwt]
 signing_key= 'gwbiubiu'
 issuer= 'gwbiubiu'

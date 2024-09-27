@@ -8,13 +8,13 @@ pub mod user;
 pub mod role;
 pub mod api;
 
-#[derive(Deserialize, PartialEq,Serialize)]
+#[derive(Deserialize, PartialEq,Serialize,Clone)]
 pub enum Status {
     SUCCESS,
     FAIL,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone, PartialEq)]
 pub struct Response<T> {
 
     pub status: Status,

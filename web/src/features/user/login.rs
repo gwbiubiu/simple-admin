@@ -58,7 +58,7 @@ pub fn login() -> Html {
                     let cookie = format!("auth_token={};Path=/; Expires={}", token, cookie_expiration);
                     html_document.set_cookie(&cookie).unwrap();
                     success_notification("login success".to_string());
-                    window().unwrap().location().set_href("/app/dashboard").unwrap();
+                    window().unwrap().location().set_href("/app/welcome").unwrap();
                 }else{
                     if let Some(error) = &login_data.error{
                         if login_data.loading==false {

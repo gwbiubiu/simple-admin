@@ -1,15 +1,55 @@
-use crate::features::common::right_drawer_slice::RightDrawerState;
+use crate::features::common::{right_drawer_slice::RightDrawerState, modal_slice::ModalState};
+use crate::apis::login::logout;
 use yew::prelude::*;
 use yew_icons::{Icon, IconId};
 use yewdux::prelude::*;
+use yew_hooks::use_async;
+use web_sys::window;
+use std::rc::Rc;
 #[function_component(Header)]
 pub fn header() -> Html {
     let (_, dispatch) = use_store::<RightDrawerState>();
+    let (_, modal_dispatch) = use_store::<ModalState>();
+
     let open_notification = {
         dispatch.reduce_mut_callback(|state| {
             state.is_open = true;
         })
     };
+
+
+    let logout_api = use_async(async move{
+        logout().await
+    });
+
+    let on_logout_click = {
+        let logout_api = logout_api.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            logout_api.run();
+        })
+    };
+
+    let on_logout_confirm = {
+        modal_dispatch.reduce_mut_callback(|state| {
+        state.is_open = true;
+        state.modal_type = crate::features::common::modal_slice::ModalType::CONFIRMATION;
+        state.title = "Logout".to_string();
+        //state.callback = Some(Rc::clone(&on_logout_click));
+
+    })};
+
+    {
+        let logout_api = logout_api.clone();
+        use_effect_with(logout_api, move|logout_api| {
+            
+            if let Some(data) = &logout_api.data {
+                if data.status == crate::apis::Status::SUCCESS {
+                    window().unwrap().location().set_href("/login").unwrap();
+                }
+            }
+        })
+    }
 
     html! {
         <div class="navbar sticky top-0 bg-base-100 z-10 shadow-md">
@@ -43,7 +83,7 @@ pub fn header() -> Html {
                         </li>
                         <li class=""><a>{"Bill History"}</a></li>
                         <div class="divider mt-0 mb-0"></div>
-                        <li><a>{"Logout"}</a></li>
+                        <li><a onclick={on_logout_confirm}>{"Logout"}</a></li>
                     </ul>
                 </div>
             </div>

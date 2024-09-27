@@ -1,1 +1,2 @@
 pub mod notification_body_right_drawer;
+pub mod confirmation_modal_body;

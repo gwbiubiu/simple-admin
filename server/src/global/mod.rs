@@ -1,11 +1,10 @@
 use sea_orm::DatabaseConnection;
 use crate::config::Config;
-use redis::aio::MultiplexedConnection;
+mod redis_adaptor;
+pub use redis_adaptor::RedisAdaptor;
 use std::sync::Arc;
-use tokio::sync::Mutex;
-
 pub struct AppState {
     pub conn: DatabaseConnection,
-    pub redis_conn: Arc<Mutex<MultiplexedConnection>>,
+    pub redis_adaptor: Arc<RedisAdaptor>,
     pub config: Config,
 }

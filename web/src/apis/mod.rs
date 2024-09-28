@@ -2,7 +2,7 @@ use gloo_net::http::Request;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
-
+use web_sys::RequestCredentials;
 pub mod login;
 pub mod user;
 pub mod role;
@@ -43,7 +43,7 @@ where
     U: DeserializeOwned,
 {
     let url = with_path(path);
-    let resp = Request::post(url.as_str())
+    let resp = Request::post(url.as_str()).credentials(RequestCredentials::Include)
         .header("Content-Type", "application/json")
         .json(&data).map_err(|e| e.to_string())?
         .send().await.map_err(|e| e.to_string())?;
@@ -57,7 +57,7 @@ where
     T: DeserializeOwned,
 {
     let url = with_path(path);
-    let resp = Request::get(url.as_str())
+    let resp = Request::get(url.as_str()).credentials(RequestCredentials::Include)
         .send()
         .await
         .map_err(|e| e.to_string())?;

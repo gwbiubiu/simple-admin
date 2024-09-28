@@ -6,6 +6,8 @@ mod services;
 pub mod entities;
 mod global;
 mod errors;
+pub mod pkg;
+
 pub mod middleware;
 
 pub use routers::*;

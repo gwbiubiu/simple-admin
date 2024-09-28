@@ -31,12 +31,11 @@ pub fn header() -> Html {
     };
 
     let on_logout_confirm = {
-        modal_dispatch.reduce_mut_callback(|state| {
+        modal_dispatch.reduce_mut_callback(move|state| {
         state.is_open = true;
         state.modal_type = crate::features::common::modal_slice::ModalType::CONFIRMATION;
         state.title = "Logout".to_string();
-        //state.callback = Some(Rc::clone(&on_logout_click));
-
+        state.callback = on_logout_click.clone();
     })};
 
     {

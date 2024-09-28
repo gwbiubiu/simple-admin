@@ -11,7 +11,6 @@ pub fn confirmation_modal_body() -> Html {
         state.modal_type = crate::features::common::modal_slice::ModalType::CONFIRMATION;
     });
 
-    let confirm = state.callback.clone().unwrap();
     html! {
         <>
             <p class="text-xl mt-8 text-center">
@@ -19,7 +18,7 @@ pub fn confirmation_modal_body() -> Html {
             </p>
             <div class="modal-action mt-12">
                 <button class="btn btn-outline" onclick={on_cancel_confirm}>{"Cancel"}</button>
-                <button class="btn btn-primary w-36" onclick={(*confirm).clone()}>{"Yes"}</button>
+                <button class="btn btn-primary w-36" onclick={state.callback.clone()}>{"Yes"}</button>
             </div>
         </>
     }

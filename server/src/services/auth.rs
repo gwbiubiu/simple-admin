@@ -2,13 +2,13 @@ use anyhow::Result;
 use argon2::Argon2;
 use password_hash::{PasswordHash, PasswordVerifier};
 use crate::errors::AppError;
-use crate::models::{self, auth::Claims, auth::AUTH_TOKEN, auth::BLACK_AUTH_LIST};
+use crate::models::{self, auth::Claims};
 use crate::errors::user::UserError::InvalidUserNameOrPassword;
 use actix_web::{web,HttpRequest};
 use crate::global::AppState;
 use time::{Duration, OffsetDateTime};
 use jsonwebtoken::{encode, EncodingKey, Header};
-use redis::AsyncCommands;
+use crate::pkg::dictionary::AUTH_TOKEN;
 
 
 
@@ -42,7 +42,8 @@ impl Auth {
     pub async fn logout(app: web::Data<AppState>, req: HttpRequest) -> Result<(), AppError> {
         if let Some(cookie) = req.cookie(AUTH_TOKEN){
             let token = cookie.value();
-            models::auth::Auth::add_token_to_black_list(app, token).await?;
+            let jwt_expires_time = app.config.jwt.expires_time;
+            app.redis_adaptor.add_token_to_black_list(token, jwt_expires_time).await?;
         }
         Ok(())
     }

@@ -1,36 +1,34 @@
 
-use std::sync::Arc;
-use tokio::sync::Mutex;
 use crate::errors::AppError;
-use redis::AsyncCommands;
-
+use redis::{Commands,  Connection};
+use std::sync::RwLock;
 pub const BLACK_AUTH_LIST: &str = "black_auth_list";
 
-use redis::aio::MultiplexedConnection;
-#[derive(Clone)]
+
 pub struct RedisAdaptor{
-    pub redis_conn: Arc<Mutex<MultiplexedConnection>>,
+    pub redis_conn: RwLock<Box<Connection>>,
 }
 
 
 impl RedisAdaptor {
-    pub fn new(redis_conn: Arc<Mutex<MultiplexedConnection>>) -> Self {
+    pub fn new(redis_conn:Connection) -> Self {
         Self {
-            redis_conn
+            redis_conn: RwLock::new(Box::new(redis_conn))
         }
     }
 
-    pub async fn add_token_to_black_list(&self, token: &str, jwt_expires_time: u64) -> Result<(), AppError> {
+    pub fn add_token_to_black_list(&self, token: &str, jwt_expires_time: u64) -> Result<(), AppError> {
         let key: String = format!("{}:{:x}", BLACK_AUTH_LIST, md5::compute(token));
-        let mut redis_conn = self.redis_conn.lock().await;
-        redis_conn.set_ex(key,1_i32, jwt_expires_time).await?;
-        Ok(())
+        let mut  conn = self.redis_conn.write().unwrap();
+        let res  =  conn.set_ex(key,1_i32, jwt_expires_time)?;
+        Ok(res)
+
     }
 
-    pub async  fn is_token_in_black_list(&self, token: String) -> Result<bool, AppError> {
+    pub  fn is_token_in_black_list(&self, token: String) -> Result<bool, AppError> {
         let key: String = format!("{}:{:x}", BLACK_AUTH_LIST, md5::compute(token));
-        let mut redis_conn = self.redis_conn.lock().await;
-        let exists: bool = redis_conn.exists(key).await?;
+        let mut conn = self.redis_conn.write().unwrap();        
+        let exists: bool = conn.exists(key)?;
         Ok(exists)
     }
 }

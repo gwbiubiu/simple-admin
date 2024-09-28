@@ -24,10 +24,10 @@ async fn main() -> Result<()> {
 
     let redis_url = config.database.get_redis_url();
     let redis_client = redis::Client::open(redis_url)?;
-    let redis_conn  = redis_client.get_multiplexed_async_connection().await?;
-    let redis_adaptor = Arc::new(RedisAdaptor::new(Arc::new(Mutex::new(redis_conn))));
+    let redis_conn  = redis_client.get_connection()?;
+    let redis_adaptor = RedisAdaptor::new(redis_conn);
 
-    let state = web::Data::new(AppState { conn, config,redis_adaptor: redis_adaptor.clone() });
+    let state = web::Data::new(AppState { conn, config,redis_adaptor });
 
     HttpServer::new(move || {
         // let cors = Cors::default()
@@ -45,7 +45,7 @@ async fn main() -> Result<()> {
             .wrap(cors)
             .wrap(middleware::Logger::default())
             .wrap(middleware::NormalizePath::new(TrailingSlash::Trim))
-            .wrap(JwtMiddleware::new(redis_adaptor.clone()))
+            .wrap(JwtMiddleware)
             .default_service(web::route().to(not_found))
             .configure(routers::router)
     })

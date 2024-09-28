@@ -43,7 +43,7 @@ impl Auth {
         if let Some(cookie) = req.cookie(AUTH_TOKEN){
             let token = cookie.value();
             let jwt_expires_time = app.config.jwt.expires_time;
-            app.redis_adaptor.add_token_to_black_list(token, jwt_expires_time).await?;
+            app.redis_adaptor.add_token_to_black_list(token, jwt_expires_time)?;
         }
         Ok(())
     }

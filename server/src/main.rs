@@ -30,15 +30,14 @@ async fn main() -> Result<()> {
     let state = web::Data::new(AppState { conn, config,redis_adaptor: redis_adaptor.clone() });
 
     HttpServer::new(move || {
-        let cors = Cors::default()
-            //.allowed_origin("http://127.0.0.1:8081")
-            // .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
-            // .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-            .supports_credentials()
-            .allow_any_header()
-            .allow_any_method()
-            .allow_any_origin()
-            .max_age(3600);
+        // let cors = Cors::default()
+        // .allowed_origin("http://127.0.0.1:8081")  // 设置允许的源
+        // .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+        // .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+        // .allowed_header(http::header::CONTENT_TYPE)
+        // .supports_credentials()  // 如果使用 credentials: include，必须启用
+        // .max_age(3600);
+        let cors = Cors::permissive();
 
 
         App::new()

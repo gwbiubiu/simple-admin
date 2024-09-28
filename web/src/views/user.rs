@@ -2,7 +2,7 @@ use yew::prelude::*;
 use crate::apis::user::{get_user_list, QueryUserParams};
 use yew_hooks::prelude::*;
 use yewdux::prelude::*;
-use web_sys::{console};
+use web_sys::console;
 use crate::components::pagination::{Pagination, PaginationState, PaginationAction};
 
 #[function_component(User)]

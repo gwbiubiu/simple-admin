@@ -24,6 +24,11 @@ pub struct Claims {
     pub iss: String,
 }
 
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Invite{
+    pub email: String
+}
 pub struct Auth;
 
 impl Auth {

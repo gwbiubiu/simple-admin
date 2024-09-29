@@ -6,7 +6,8 @@ use crate::models::{self, success_json, success_none};
 pub fn auth_router(cfg: &mut web::ServiceConfig) {
     cfg
     .service(login)
-    .service(logout);
+    .service(logout)
+    .service(invite);
 
 }
 
@@ -21,5 +22,11 @@ async fn login(data: web::Data<AppState>, login: web::Json<models::Login>) -> an
 #[get("/logout")]
 async fn logout(data: web::Data<AppState>, req: HttpRequest) -> anyhow::Result<HttpResponse, Error> {
     Auth::logout(data.clone(),req).await?;
+    Ok(success_none())
+}
+
+#[post("/invite")]
+async fn invite(data: web::Data<AppState>, invite: web::Json<models::Invite>) -> anyhow::Result<HttpResponse, Error> {
+    Auth::invite(data.clone(), invite.into_inner()).await?;
     Ok(success_none())
 }

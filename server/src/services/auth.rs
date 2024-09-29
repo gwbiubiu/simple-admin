@@ -9,6 +9,8 @@ use crate::global::AppState;
 use time::{Duration, OffsetDateTime};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use crate::pkg::dictionary::AUTH_TOKEN;
+use rand::Rng;
+
 
 
 
@@ -47,8 +49,19 @@ impl Auth {
         }
         Ok(())
     }
+
+    pub async fn invite(data: web::Data<AppState>, invite: models::Invite) -> Result<(), AppError> {
+        let token = generate_token();
+        let res = data.redis_adaptor.set_invited_token(token.clone(), invite.email)?;
+        Ok(res)
+    }
 }
 
+
+fn generate_token() -> String {
+    let mut rng = rand::thread_rng();
+    (0..32).map(|_| rng.gen_range(33..127) as u8 as char).collect()
+}
 
 #[cfg(test)]
 mod tests {

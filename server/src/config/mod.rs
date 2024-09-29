@@ -1,15 +1,18 @@
 mod database;
 mod jwt;
+mod email;
 use std::fs::File;
 use std::io::Read;
 use serde::Deserialize;
 use self::database::Database;
 use self::jwt::Jwt;
+use self::email::Email;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub database: Database,
     pub jwt: Jwt,
+    pub email: Email,
 }
 
 

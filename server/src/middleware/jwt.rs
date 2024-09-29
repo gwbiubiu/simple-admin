@@ -1,6 +1,6 @@
 use crate::models::Claims;
 use crate::pkg::dictionary::AUTH_TOKEN;
-use crate::{AppState, RedisAdaptor};
+use crate::AppState;
 use actix_web::web;
 use actix_web::{
     body::EitherBody,
@@ -14,7 +14,6 @@ use futures::{
 use jsonwebtoken::{decode, DecodingKey, Validation};
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::Arc;
 
 pub struct JwtMiddleware;
 

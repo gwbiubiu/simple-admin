@@ -27,3 +27,4 @@ http = "0.2.12"
 actix-cors = "0.7.0"
 redis = { version = "0.27.2", features = ["tokio-comp"] }
 md5 = "0.7.0"
+lettre = "0.11.9"

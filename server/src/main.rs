@@ -27,7 +27,14 @@ async fn main() -> Result<()> {
     let redis_conn  = redis_client.get_connection()?;
     let redis_adaptor = RedisAdaptor::new(redis_conn);
 
-    let state = web::Data::new(AppState { conn, config,redis_adaptor });
+
+    let gmail_sender = config.email.gmail.get_gmail_sender();
+
+    let state = web::Data::new(AppState { conn, 
+        config,
+        redis_adaptor,
+        email_sender:gmail_sender
+    });
 
     HttpServer::new(move || {
         // let cors = Cors::default()
@@ -42,10 +49,10 @@ async fn main() -> Result<()> {
 
         App::new()
             .app_data(state.clone())
-            .wrap(cors)
             .wrap(middleware::Logger::default())
             .wrap(middleware::NormalizePath::new(TrailingSlash::Trim))
             .wrap(JwtMiddleware)
+            .wrap(cors)
             .default_service(web::route().to(not_found))
             .configure(routers::router)
     })

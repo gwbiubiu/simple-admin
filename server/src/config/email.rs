@@ -1,7 +1,6 @@
 use serde::Deserialize;
 use crate::global::email::{GmailSender,EmailSender};
 use std::sync::Arc;
-use std::boxed::Box;
 
 #[derive(Debug, Deserialize)]
 pub struct Email {

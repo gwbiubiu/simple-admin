@@ -25,6 +25,8 @@ pub enum AppError {
     ApiError(ApiError),
     #[error("Role Error")]
     RoleError(RoleError),
+    #[error("Error: {0}")]
+    Error(String),
 }
 
 impl ResponseError for AppError {

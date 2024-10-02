@@ -52,7 +52,8 @@ impl Auth {
 
     pub async fn invite(data: web::Data<AppState>, invite: models::Invite) -> Result<(), AppError> {
         let token = generate_token();
-        let res = data.redis_adaptor.set_invited_token(token.clone(), invite.email)?;
+        let res = data.redis_adaptor.set_invited_token(token.clone(), invite.email.clone())?;
+        data.email_sender.send_register_email(invite.email.clone(),token).map_err(|e| AppError::Error(e.to_string()))?;
         Ok(res)
     }
 }

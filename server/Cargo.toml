@@ -29,3 +29,5 @@ redis = { version = "0.27.2", features = ["tokio-comp"] }
 md5 = "0.7.0"
 lettre = "0.11.9"
 rand = "0.8.5"
+tera = "1.20.0"
+lazy_static = "1.5.0"

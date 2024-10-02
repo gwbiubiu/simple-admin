@@ -25,7 +25,7 @@ pub struct Claims {
 }
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Invite{
     pub email: String
 }

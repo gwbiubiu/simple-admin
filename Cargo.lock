@@ -3152,6 +3152,7 @@ dependencies = [
  "log",
  "md5",
  "password-hash",
+ "rand",
  "redis",
  "sea-orm",
  "serde",
